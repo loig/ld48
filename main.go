@@ -27,7 +27,7 @@ func main() {
 	g := game{}
 
 	ebiten.SetWindowTitle("LD48")
-	ebiten.SetWindowSize(800, 600)
+	ebiten.SetWindowSize(windowWidth, windowHeight)
 
 	err := ebiten.RunGame(&g)
 	if err != nil {

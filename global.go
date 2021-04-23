@@ -16,6 +16,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-func (g *game) Layout(screenWidth, screenHeight int) (width, height int) {
-	return windowWidth, windowHeight
-}
+const (
+	windowHeight int = 600
+	windowWidth  int = 800
+)
