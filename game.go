@@ -17,4 +17,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 type game struct {
+	p player
+}
+
+func initGame() *game {
+	g := game{}
+
+	g.p = player{
+		xposition: float64(windowWidth) / 2,
+		yposition: float64(windowHeight) * 2 / 3,
+		xspeed:    0,
+		width:     64,
+		height:    64,
+		falling:   false,
+	}
+
+	return &g
 }

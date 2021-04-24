@@ -24,12 +24,12 @@ import (
 
 func main() {
 
-	g := game{}
+	g := initGame()
 
 	ebiten.SetWindowTitle("LD48")
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 
-	err := ebiten.RunGame(&g)
+	err := ebiten.RunGame(g)
 	if err != nil {
 		log.Print(err)
 	}

@@ -18,4 +18,8 @@ package main
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-func (g *game) Draw(screen *ebiten.Image) {}
+func (g *game) Draw(screen *ebiten.Image) {
+
+	g.p.draw(screen)
+
+}

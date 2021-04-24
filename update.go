@@ -17,5 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 func (g *game) Update() error {
+
+	g.p.update()
+
 	return nil
 }
