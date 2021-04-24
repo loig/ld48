@@ -55,5 +55,7 @@ func initGame() *game {
 
 	g.f = initField()
 
+	g.state = stateElevatorDone
+
 	return &g
 }

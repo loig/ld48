@@ -30,7 +30,7 @@ func (g *game) Update() error {
 			g.state = stateElevatorDead
 		}
 		if g.fallingDiamondCollision() {
-			g.score += 1
+			g.score++
 		}
 	case stateElevatorDone:
 		g.state = stateFallDanger
@@ -41,6 +41,9 @@ func (g *game) Update() error {
 		g.p.update()
 		if g.fallingPlayerCollision() {
 			g.state = stateFallDead
+		}
+		if g.fallingPlayerDiamondCollision() {
+			g.score++
 		}
 		if g.p.fallingDone() {
 			if g.f.setFallingLevel() {

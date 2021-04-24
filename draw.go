@@ -26,7 +26,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.p.draw(screen)
 		g.fOL.draw(screen)
 		g.f.drawElevator(screen)
-	case stateFallDanger, stateFallDead, stateFallTransition:
+	case stateFallDanger, stateFallTransition:
 		g.f.drawBackground(screen)
 		g.p.draw(screen)
 		g.f.drawWalls(screen)

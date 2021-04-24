@@ -30,6 +30,7 @@ type field struct {
 	backgroundYSpeed float64
 	elevator         [gridHeight][gridWidth + leftMargin + rightMargin]int
 	walls            [gridHeight][gridWidth + leftMargin + rightMargin]int
+	oldWalls         [gridHeight][gridWidth + leftMargin + rightMargin]int
 	wallTiles        [gridHeight * 2][(gridWidth + leftMargin + rightMargin) * 2]int
 	oldWallTiles     [gridHeight * 2][(gridWidth + leftMargin + rightMargin) * 2]int
 	fallingLevelNum  int
@@ -69,6 +70,7 @@ const (
 const (
 	noWallTile int = iota
 	wallTile
+	diamondTile
 )
 
 const (
@@ -219,6 +221,12 @@ func (f *field) drawElevator(screen *ebiten.Image) {
 func (f *field) setFallingLevel() bool {
 	f.yposition = 0
 
+	for line := 0; line < len(f.walls); line++ {
+		for row := 0; row < len(f.walls[0]); row++ {
+			f.oldWalls[line][row] = f.walls[line][row]
+		}
+	}
+
 	log.Print(f.fallingLevelNum)
 	f.fallingLevelNum++
 	switch f.fallingLevelNum {
@@ -351,6 +359,16 @@ func (f *field) drawWalls(screen *ebiten.Image) {
 				options.GeoM.Translate(float64(cellSize/2), 0)
 			}
 		}
+		for line := 0; line < gridHeight; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize))
+			for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
+				if f.walls[line][row] == diamondTile {
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(diamond*cellSize, cellSize, diamond*cellSize+cellSize, 2*cellSize)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize), 0)
+			}
+		}
 	} else {
 		for line := 0; line < gridHeight*2; line++ {
 			options := ebiten.DrawImageOptions{}
@@ -374,6 +392,16 @@ func (f *field) drawWalls(screen *ebiten.Image) {
 					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(xstart, ystart, xstart+cellSize/2, ystart+cellSize/2)).(*ebiten.Image), &options)
 				}
 				options.GeoM.Translate(float64(cellSize/2), 0)
+			}
+		}
+		for line := 0; line < gridHeight; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize)+f.yposition)
+			for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
+				if f.oldWalls[line][row] == diamondTile {
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(diamond*cellSize, cellSize, diamond*cellSize+cellSize, 2*cellSize)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize), 0)
 			}
 		}
 	}

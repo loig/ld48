@@ -23,7 +23,7 @@ var fallingLevel1 [gridHeight][gridWidth + leftMargin + rightMargin]int = [12][1
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-	[12]int{wallTile, wallTile, wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
+	[12]int{wallTile, wallTile, wallTile, wallTile, diamondTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, wallTile, wallTile, noWallTile, noWallTile, wallTile, noWallTile, wallTile, wallTile},

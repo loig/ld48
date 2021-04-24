@@ -52,6 +52,20 @@ func (p *player) collide(x int, y float64) bool {
 func (g *game) fallingPlayerCollision() bool {
 	ymin := int(math.Floor(g.p.yposition / float64(cellSize)))
 	ymax := int(math.Ceil(g.p.yposition / float64(cellSize)))
-	return (ymin > 0 && ymin < gridHeight && g.f.walls[ymin][g.p.xposition+leftMargin] != noWallTile) ||
-		(ymax > 0 && ymax < gridHeight && g.f.walls[ymax][g.p.xposition+leftMargin] != noWallTile)
+	return (ymin > 0 && ymin < gridHeight && g.f.walls[ymin][g.p.xposition+leftMargin] == wallTile) ||
+		(ymax > 0 && ymax < gridHeight && g.f.walls[ymax][g.p.xposition+leftMargin] == wallTile)
+}
+
+func (g *game) fallingPlayerDiamondCollision() bool {
+	ymin := int(math.Floor(g.p.yposition / float64(cellSize)))
+	ymax := int(math.Ceil(g.p.yposition / float64(cellSize)))
+	if ymin > 0 && ymin < gridHeight && g.f.walls[ymin][g.p.xposition+leftMargin] == diamondTile {
+		g.f.walls[ymin][g.p.xposition+leftMargin] = noWallTile
+		return true
+	}
+	if ymax > 0 && ymax < gridHeight && g.f.walls[ymax][g.p.xposition+leftMargin] == diamondTile {
+		g.f.walls[ymax][g.p.xposition+leftMargin] = noWallTile
+		return true
+	}
+	return false
 }
