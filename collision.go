@@ -16,9 +16,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
+import (
+	"math"
+)
+
 func (g *game) fallingObjectsCollision() bool {
 	for objectID := 0; objectID < len(g.fOL.objects); objectID++ {
-		if g.fOL.objects[objectID].alive && g.p.collide(
+		if g.fOL.objects[objectID].alive && g.fOL.objects[objectID].objectType != diamond && g.p.collide(
 			g.fOL.objects[objectID].xposition,
 			g.fOL.objects[objectID].yposition,
 		) {
@@ -28,10 +32,26 @@ func (g *game) fallingObjectsCollision() bool {
 	return false
 }
 
+func (g *game) fallingDiamondCollision() bool {
+	for objectID := 0; objectID < len(g.fOL.objects); objectID++ {
+		if g.fOL.objects[objectID].alive && g.fOL.objects[objectID].objectType == diamond && g.p.collide(
+			g.fOL.objects[objectID].xposition,
+			g.fOL.objects[objectID].yposition,
+		) {
+			g.fOL.objects[objectID].alive = false
+			return true
+		}
+	}
+	return false
+}
+
 func (p *player) collide(x int, y float64) bool {
-	return p.xposition == x && float64(p.yposition*cellSize-cellSize) < y
+	return p.xposition == x && p.yposition-float64(cellSize) < y
 }
 
 func (g *game) fallingPlayerCollision() bool {
-	return g.f.walls[g.p.yposition][g.p.xposition+leftMargin] != noWallTile
+	ymin := int(math.Floor(g.p.yposition / float64(cellSize)))
+	ymax := int(math.Ceil(g.p.yposition / float64(cellSize)))
+	return (ymin > 0 && ymin < gridHeight && g.f.walls[ymin][g.p.xposition+leftMargin] != noWallTile) ||
+		(ymax > 0 && ymax < gridHeight && g.f.walls[ymax][g.p.xposition+leftMargin] != noWallTile)
 }

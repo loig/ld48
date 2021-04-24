@@ -22,6 +22,7 @@ type game struct {
 	fOL   fallingObjectsList
 	sH    speedHandler
 	f     field
+	score int
 }
 
 const (
@@ -29,6 +30,7 @@ const (
 	stateElevatorDone
 	stateElevatorDead
 	stateFallDanger
+	stateFallTransition
 	stateFallDone
 	stateFallDead
 )
@@ -40,7 +42,7 @@ func initGame() *game {
 
 	g.p = player{
 		xposition: 3,
-		yposition: 9,
+		yposition: 9 * float64(cellSize),
 	}
 
 	g.fOL = initFallingObjectsList(elevatorNumObjectsPerLevel)

@@ -18,11 +18,10 @@ package main
 
 import (
 	"image"
-	"image/color"
+	"log"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type field struct {
@@ -31,8 +30,13 @@ type field struct {
 	backgroundYSpeed float64
 	elevator         [gridHeight][gridWidth + leftMargin + rightMargin]int
 	walls            [gridHeight][gridWidth + leftMargin + rightMargin]int
+	wallTiles        [gridHeight * 2][(gridWidth + leftMargin + rightMargin) * 2]int
+	oldWallTiles     [gridHeight * 2][(gridWidth + leftMargin + rightMargin) * 2]int
 	fallingLevelNum  int
 	currentOddity    int
+	isTransition     bool
+	transitionSpeed  float64
+	yposition        float64
 }
 
 const (
@@ -65,6 +69,30 @@ const (
 const (
 	noWallTile int = iota
 	wallTile
+)
+
+const (
+	topLeftCornerTile int = iota
+	topRightCornerTile
+	topLeftSmallCornerTile
+	topRightSmallCornerTile
+	fullTile1
+	fullTile2
+	topEdgeTile1
+	topEdgeTile2
+	leftEdgeTile1
+	rightEdgeTile1
+	bottomLeftCornerTile
+	bottomRightCornerTile
+	bottomLeftSmallCornerTile
+	bottomRightSmallCornerTile
+	fullTile3
+	fullTile4
+	bottomEdgeTile1
+	bottomEdgeTile2
+	leftEdgeTile2
+	rightEdgeTile2
+	emptySmallTile
 )
 
 func initField() field {
@@ -149,14 +177,14 @@ func (f *field) genElevator(line int) {
 
 func (f *field) update() {
 	f.backgroundYShift += f.backgroundYSpeed
-	if f.backgroundYShift >= float64(cellSize) {
+	if -f.backgroundYShift >= float64(cellSize) {
 		for line := 0; line < gridHeight+1; line++ {
 			for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
 				f.background[line][row] = f.background[line+1][row]
 			}
 		}
 		f.genLine(gridHeight + 1)
-		f.backgroundYShift = 0
+		f.backgroundYShift = f.backgroundYShift + float64(cellSize)
 		f.currentOddity = (f.currentOddity + 1) % 2
 	}
 }
@@ -164,7 +192,7 @@ func (f *field) update() {
 func (f *field) drawBackground(screen *ebiten.Image) {
 	for line := 0; line < gridHeight+2; line++ {
 		options := ebiten.DrawImageOptions{}
-		options.GeoM.Translate(0, float64(line*cellSize-cellSize)-f.backgroundYShift)
+		options.GeoM.Translate(0, float64(line*cellSize-cellSize)+f.backgroundYShift)
 		for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
 			backTile := backBackTile1
 			if (line+row+f.currentOddity)%2 == 0 {
@@ -188,30 +216,173 @@ func (f *field) drawElevator(screen *ebiten.Image) {
 	}
 }
 
-func (f *field) setFallingLevel() {
-	f.walls = [12][12]int{
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-		[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-	}
-	f.fallingLevelNum++
-}
+func (f *field) setFallingLevel() bool {
+	f.yposition = 0
 
-func (f *field) drawWalls(screen *ebiten.Image) {
+	log.Print(f.fallingLevelNum)
+	f.fallingLevelNum++
+	switch f.fallingLevelNum {
+	case 1:
+		f.walls = fallingLevel1
+	case 2:
+		f.walls = fallingLevel2
+	default:
+		return true
+	}
+
+	for line := 0; line < len(f.wallTiles); line++ {
+		for row := 0; row < len(f.wallTiles[0]); row++ {
+			f.oldWallTiles[line][row] = f.wallTiles[line][row]
+		}
+	}
 	for line := 0; line < gridHeight; line++ {
-		for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
-			if f.walls[line][row] != noWallTile {
-				ebitenutil.DrawRect(screen, float64(row*cellSize), float64(line*cellSize), float64(cellSize), float64(cellSize), color.RGBA{0, 0, 255, 255})
+		f.wallTiles[line*2][0] = emptySmallTile
+		f.wallTiles[line*2][1] = emptySmallTile
+		f.wallTiles[line*2+1][0] = emptySmallTile
+		f.wallTiles[line*2+1][1] = emptySmallTile
+		f.wallTiles[line*2][((gridWidth+leftMargin+rightMargin)-1)*2] = emptySmallTile
+		f.wallTiles[line*2][((gridWidth+leftMargin+rightMargin)-1)*2+1] = emptySmallTile
+		f.wallTiles[line*2+1][((gridWidth+leftMargin+rightMargin)-1)*2] = emptySmallTile
+		f.wallTiles[line*2+1][((gridWidth+leftMargin+rightMargin)-1)*2+1] = emptySmallTile
+		for row := 1; row < gridWidth+leftMargin+rightMargin-1; row++ {
+
+			if f.walls[line][row] == wallTile {
+				var topLeftTile int
+				if line == 0 || f.walls[line-1][row] == wallTile {
+					if f.walls[line][row-1] == wallTile {
+						if line == 0 || f.walls[line-1][row-1] == wallTile {
+							topLeftTile = fullTile1
+						} else {
+							topLeftTile = topLeftSmallCornerTile
+						}
+					} else {
+						topLeftTile = leftEdgeTile1
+					}
+				} else {
+					if f.walls[line][row-1] == wallTile {
+						topLeftTile = topEdgeTile1
+					} else {
+						topLeftTile = topLeftCornerTile
+					}
+				}
+				f.wallTiles[line*2][row*2] = topLeftTile
+
+				var topRightTile int
+				if line == 0 || f.walls[line-1][row] == wallTile {
+					if f.walls[line][row+1] == wallTile {
+						if line == 0 || f.walls[line-1][row+1] == wallTile {
+							topRightTile = fullTile2
+						} else {
+							topRightTile = topRightSmallCornerTile
+						}
+					} else {
+						topRightTile = rightEdgeTile1
+					}
+				} else {
+					if f.walls[line][row+1] == wallTile {
+						topRightTile = topEdgeTile2
+					} else {
+						topRightTile = topRightCornerTile
+					}
+				}
+				f.wallTiles[line*2][row*2+1] = topRightTile
+
+				var bottomRightTile int
+				if line == gridHeight-1 || f.walls[line+1][row] == wallTile {
+					if f.walls[line][row+1] == wallTile {
+						if line == gridHeight-1 || f.walls[line+1][row+1] == wallTile {
+							bottomRightTile = fullTile2
+						} else {
+							bottomRightTile = bottomRightSmallCornerTile
+						}
+					} else {
+						bottomRightTile = rightEdgeTile2
+					}
+				} else {
+					if f.walls[line][row+1] == wallTile {
+						bottomRightTile = bottomEdgeTile2
+					} else {
+						bottomRightTile = bottomRightCornerTile
+					}
+				}
+				f.wallTiles[line*2+1][row*2+1] = bottomRightTile
+
+				var bottomLeftTile int
+				if line == gridHeight-1 || f.walls[line+1][row] == wallTile {
+					if f.walls[line][row-1] == wallTile {
+						if line == gridHeight-1 || f.walls[line+1][row-1] == wallTile {
+							bottomLeftTile = fullTile2
+						} else {
+							bottomLeftTile = bottomLeftSmallCornerTile
+						}
+					} else {
+						bottomLeftTile = leftEdgeTile2
+					}
+				} else {
+					if f.walls[line][row-1] == wallTile {
+						bottomLeftTile = bottomEdgeTile1
+					} else {
+						bottomLeftTile = bottomLeftCornerTile
+					}
+				}
+				f.wallTiles[line*2+1][row*2] = bottomLeftTile
+			} else {
+				f.wallTiles[line*2][row*2] = emptySmallTile
+				f.wallTiles[line*2][row*2+1] = emptySmallTile
+				f.wallTiles[line*2+1][row*2] = emptySmallTile
+				f.wallTiles[line*2+1][row*2+1] = emptySmallTile
 			}
 		}
 	}
+	return false
+}
+
+func (f *field) drawWalls(screen *ebiten.Image) {
+	if !f.isTransition {
+		for line := 0; line < gridHeight*2; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize/2))
+			for row := 0; row < (gridWidth+leftMargin+rightMargin)*2; row++ {
+				if f.wallTiles[line][row] != emptySmallTile {
+					xstart := (f.wallTiles[line][row] % (emptySmallTile / 2)) * cellSize / 2
+					ystart := 4*cellSize + (f.wallTiles[line][row]/(emptySmallTile/2))*cellSize/2
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(xstart, ystart, xstart+cellSize/2, ystart+cellSize/2)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize/2), 0)
+			}
+		}
+	} else {
+		for line := 0; line < gridHeight*2; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize/2)+f.yposition)
+			for row := 0; row < (gridWidth+leftMargin+rightMargin)*2; row++ {
+				if f.oldWallTiles[line][row] != emptySmallTile {
+					xstart := (f.oldWallTiles[line][row] % (emptySmallTile / 2)) * cellSize / 2
+					ystart := 4*cellSize + (f.oldWallTiles[line][row]/(emptySmallTile/2))*cellSize/2
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(xstart, ystart, xstart+cellSize/2, ystart+cellSize/2)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize/2), 0)
+			}
+		}
+		for line := 0; line < gridHeight*2; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize/2+gridHeight*cellSize-cellSize)+f.yposition)
+			for row := 0; row < (gridWidth+leftMargin+rightMargin)*2; row++ {
+				if f.wallTiles[line][row] != emptySmallTile {
+					xstart := (f.wallTiles[line][row] % (emptySmallTile / 2)) * cellSize / 2
+					ystart := 4*cellSize + (f.wallTiles[line][row]/(emptySmallTile/2))*cellSize/2
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(xstart, ystart, xstart+cellSize/2, ystart+cellSize/2)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize/2), 0)
+			}
+		}
+	}
+}
+
+func (f *field) updateYPosition() {
+	f.yposition += f.transitionSpeed
+}
+
+func (f *field) moveDone() bool {
+	return false
 }

@@ -28,7 +28,7 @@ const (
 	elevatorNumObjectsPerLevel int     = 15
 	initialSpawnChances        int     = 3
 	initialSpawnInterval       int     = 3
-	initialBackgroundYSpeed    float64 = 1
+	initialBackgroundYSpeed    float64 = -1
 	initialObjectSpeed         float64 = 7
 	screenWidth                        = (gridWidth + leftMargin + rightMargin) * cellSize
 	screenHeight                       = gridHeight * cellSize

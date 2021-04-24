@@ -21,7 +21,7 @@ func (g *game) Update() error {
 	switch g.state {
 	case stateElevatorDanger:
 		g.f.update()
-		g.p.update(false)
+		g.p.update()
 		g.fOL.update(g.sH.isNextFallingObjectStep())
 		if g.fOL.doneFalling() {
 			g.state = stateElevatorDone
@@ -29,19 +29,38 @@ func (g *game) Update() error {
 		if g.fallingObjectsCollision() {
 			g.state = stateElevatorDead
 		}
+		if g.fallingDiamondCollision() {
+			g.score += 1
+		}
 	case stateElevatorDone:
 		g.state = stateFallDanger
 		g.p.startFall()
 		g.f.setFallingLevel()
 	case stateElevatorDead:
 	case stateFallDanger:
-		g.p.update(g.sH.isNextFallingPlayerStep())
+		g.p.update()
 		if g.fallingPlayerCollision() {
 			g.state = stateFallDead
 		}
 		if g.p.fallingDone() {
+			if g.f.setFallingLevel() {
+				g.state = stateFallDone
+			} else {
+				g.f.isTransition = true
+				g.p.yspeed = -g.p.yspeed
+				g.f.transitionSpeed = g.p.yspeed
+				g.f.backgroundYSpeed = g.p.yspeed
+				g.state = stateFallTransition
+			}
+		}
+	case stateFallTransition:
+		g.p.updateYPosition()
+		g.f.updateYPosition()
+		g.f.update()
+		if g.p.transitionDone() {
 			g.p.startFall()
-			g.f.setFallingLevel()
+			g.f.isTransition = false
+			g.state = stateFallDanger
 		}
 	case stateFallDead:
 	}

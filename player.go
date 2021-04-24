@@ -25,9 +25,11 @@ import (
 )
 
 type player struct {
-	xposition, yposition int
-	isFalling            bool
-	pose                 int
+	xposition int
+	yposition float64
+	yspeed    float64
+	isFalling bool
+	pose      int
 }
 
 const (
@@ -39,9 +41,9 @@ const (
 	endPose
 )
 
-func (p *player) update(fallStep bool) {
+func (p *player) update() {
 	p.updateXPosition()
-	if p.isFalling && fallStep {
+	if p.isFalling {
 		p.updateYPosition()
 	}
 }
@@ -70,20 +72,25 @@ func (p *player) updateXPosition() {
 }
 
 func (p *player) updateYPosition() {
-	p.yposition++
+	p.yposition += p.yspeed
 }
 
 func (p *player) startFall() {
 	p.isFalling = true
 	p.yposition = 0
+	p.yspeed = 3
 }
 
 func (p *player) fallingDone() bool {
-	return p.yposition >= gridHeight-1
+	return p.yposition >= float64((gridHeight-1)*cellSize)
+}
+
+func (p *player) transitionDone() bool {
+	return p.yposition <= 0
 }
 
 func (p *player) draw(screen *ebiten.Image) {
 	options := ebiten.DrawImageOptions{}
-	options.GeoM.Translate(float64((p.xposition+leftMargin)*cellSize), float64(p.yposition*cellSize))
+	options.GeoM.Translate(float64((p.xposition+leftMargin)*cellSize), p.yposition)
 	screen.DrawImage(spriteSheetImage.SubImage(image.Rect(p.pose*cellSize, 3*cellSize, p.pose*cellSize+cellSize, 4*cellSize)).(*ebiten.Image), &options)
 }

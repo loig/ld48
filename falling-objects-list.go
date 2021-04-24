@@ -34,6 +34,7 @@ type fallingObjectsList struct {
 	levelNum         int
 	objectSpeed      float64
 	batchSize        int
+	numDiamond       int
 }
 
 func (fOL *fallingObjectsList) update(mayAddObject bool) {
@@ -79,6 +80,7 @@ func initFallingObjectsList(numObjects int) fallingObjectsList {
 	fOL.spawnID = 0
 	fOL.objectSpeed = initialObjectSpeed
 	fOL.batchSize = 1
+	fOL.numDiamond = 3
 	return fOL
 }
 
@@ -103,17 +105,24 @@ func (fOL *fallingObjectsList) addFallingObjects() {
 	if fOL.sinceLastSpawn >= fOL.minSpawnInterval &&
 		(fOL.sinceLastSpawn >= fOL.maxSpawnInterval || rand.Intn(fOL.spawnChances) == 0) {
 		needShuffle := false
+		diamondInBatch := false
 		for spawned := 0; spawned < fOL.batchSize; spawned++ {
 			xposition := fOL.spawnPositions[fOL.spawnID%len(fOL.spawnPositions)]
 			fOL.spawnID++
 			if fOL.spawnID >= len(fOL.spawnPositions) {
 				needShuffle = true
 			}
+			isDiamond := !diamondInBatch && fOL.numDiamond > 0 &&
+				((fOL.objectsToAdd <= fOL.numDiamond) || rand.Intn(5) == 0)
+			if isDiamond {
+				fOL.numDiamond--
+				diamondInBatch = true
+			}
 			objectID := fOL.nextAvailable()
 			if objectID < len(fOL.objects) {
-				fOL.objects[objectID].reset(xposition, fOL.getYSpeed())
+				fOL.objects[objectID].reset(xposition, fOL.getYSpeed(), isDiamond)
 			} else {
-				fOL.objects = append(fOL.objects, newFallingObject(xposition, fOL.getYSpeed()))
+				fOL.objects = append(fOL.objects, newFallingObject(xposition, fOL.getYSpeed(), isDiamond))
 			}
 		}
 		if needShuffle {
@@ -142,23 +151,29 @@ func (fOL *fallingObjectsList) setLevel() {
 			fOL.maxSpawnInterval = 2
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
 			fOL.objectSpeed = 9
+			fOL.numDiamond = 3
 		case 2:
 			fOL.spawnChances = 1
 			fOL.maxSpawnInterval = 1
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
 			fOL.objectSpeed = 11
+			fOL.numDiamond = 3
 		case 3:
 			fOL.batchSize = 3
 			fOL.minSpawnInterval = 2
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
+			fOL.numDiamond = 3
 		case 4:
 			fOL.batchSize = 5
 			fOL.minSpawnInterval = 3
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
+			fOL.numDiamond = 3
 		case 5:
 			fOL.batchSize = 7
-			fOL.minSpawnInterval = 4
+			fOL.minSpawnInterval = 5
+			fOL.objectSpeed = 8
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
+			fOL.numDiamond = 0
 		}
 	}
 }

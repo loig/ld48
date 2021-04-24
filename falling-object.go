@@ -42,6 +42,7 @@ const (
 	stone8
 	stone9
 	stone10
+	diamond
 )
 
 func (fO *fallingObject) update() {
@@ -59,36 +60,40 @@ func (fO *fallingObject) draw(screen *ebiten.Image) {
 	}
 }
 
-func newFallingObject(xposition int, yspeed float64) (fO fallingObject) {
-	fO.reset(xposition, yspeed)
+func newFallingObject(xposition int, yspeed float64, isDiamond bool) (fO fallingObject) {
+	fO.reset(xposition, yspeed, isDiamond)
 	return fO
 }
 
-func (fO *fallingObject) reset(xposition int, yspeed float64) {
+func (fO *fallingObject) reset(xposition int, yspeed float64, isDiamond bool) {
 	fO.alive = true
 	fO.xposition = xposition
 	fO.yposition = 0
 	fO.yspeed = yspeed
-	switch rand.Intn(10) {
-	case 0:
-		fO.objectType = stone1
-	case 1:
-		fO.objectType = stone2
-	case 2:
-		fO.objectType = stone3
-	case 3:
-		fO.objectType = stone4
-	case 4:
-		fO.objectType = stone5
-	case 5:
-		fO.objectType = stone6
-	case 6:
-		fO.objectType = stone7
-	case 7:
-		fO.objectType = stone8
-	case 8:
-		fO.objectType = stone9
-	case 9:
-		fO.objectType = stone10
+	if isDiamond {
+		fO.objectType = diamond
+	} else {
+		switch rand.Intn(10) {
+		case 0:
+			fO.objectType = stone1
+		case 1:
+			fO.objectType = stone2
+		case 2:
+			fO.objectType = stone3
+		case 3:
+			fO.objectType = stone4
+		case 4:
+			fO.objectType = stone5
+		case 5:
+			fO.objectType = stone6
+		case 6:
+			fO.objectType = stone7
+		case 7:
+			fO.objectType = stone8
+		case 8:
+			fO.objectType = stone9
+		case 9:
+			fO.objectType = stone10
+		}
 	}
 }
