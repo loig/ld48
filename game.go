@@ -20,10 +20,12 @@ type game struct {
 	state int
 	p     player
 	fOL   fallingObjectsList
+	sH    speedHandler
 }
 
 const (
 	stateElevatorDanger int = iota
+	stateElevatorDone
 	stateElevatorDead
 )
 
@@ -31,15 +33,15 @@ func initGame() *game {
 	g := game{}
 
 	g.p = player{
-		xposition: float64(screenWidth) / 2,
-		yposition: float64(screenHeight) * 2 / 3,
-		xspeed:    0,
-		width:     64,
-		height:    64,
-		falling:   false,
+		xposition: 3,
+		yposition: 9,
 	}
 
 	g.fOL = initFallingObjectsList()
+
+	g.sH = speedHandler{
+		framesPerStep: 30,
+	}
 
 	return &g
 }

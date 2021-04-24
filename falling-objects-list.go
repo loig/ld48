@@ -20,23 +20,27 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 type fallingObjectsList struct {
 	objects      []fallingObject
-	frames       []int
+	atUpdate     []int
 	nextObjectID int
-	frameCount   int
+	updateCount  int
 }
 
 func (fOL *fallingObjectsList) update() {
-	if fOL.nextObjectID < len(fOL.frames) {
-		fOL.frameCount++
-		for fOL.nextObjectID < len(fOL.frames) &&
-			fOL.frameCount >= fOL.frames[fOL.nextObjectID] {
+	if fOL.nextObjectID < len(fOL.atUpdate) {
+		fOL.updateCount++
+		for fOL.nextObjectID < len(fOL.atUpdate) &&
+			fOL.updateCount >= fOL.atUpdate[fOL.nextObjectID] {
 			fOL.nextObjectID++
-			fOL.frameCount = 0
+			fOL.updateCount = 0
 		}
 	}
 	for objectID := 0; objectID < fOL.nextObjectID; objectID++ {
 		fOL.objects[objectID].update()
 	}
+}
+
+func (fOL *fallingObjectsList) doneFalling() bool {
+	return fOL.nextObjectID == len(fOL.objects) && fOL.objects[fOL.nextObjectID-1].out
 }
 
 func (fOL *fallingObjectsList) draw(screen *ebiten.Image) {
@@ -48,12 +52,12 @@ func (fOL *fallingObjectsList) draw(screen *ebiten.Image) {
 func initFallingObjectsList() fallingObjectsList {
 	fOL := fallingObjectsList{}
 	fOL.objects = []fallingObject{
-		newFallingObject(100, 16, 16),
-		newFallingObject(500, 32, 32),
-		newFallingObject(300, 12, 12),
+		newFallingObject(2),
+		newFallingObject(5),
+		newFallingObject(7),
 	}
-	fOL.frames = []int{
-		20, 100, 0,
+	fOL.atUpdate = []int{
+		2, 10, 0,
 	}
 	return fOL
 }

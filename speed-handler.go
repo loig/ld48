@@ -16,35 +16,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import (
-	"image/color"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-)
-
-type fallingObject struct {
-	xposition, yposition int
-	out                  bool
+type speedHandler struct {
+	framesPerStep int
+	frame         int
 }
 
-func (fO *fallingObject) update() {
-	if !fO.out {
-		fO.yposition++
-		fO.out = fO.yposition >= gridHeight
+func (s *speedHandler) isNextStep() bool {
+	s.frame++
+	if s.frame >= s.framesPerStep {
+		s.frame = 0
+		return true
 	}
-}
-
-func (fO *fallingObject) draw(screen *ebiten.Image) {
-	if !fO.out {
-		ebitenutil.DrawRect(screen, float64(fO.xposition*cellSize), float64(fO.yposition*cellSize), float64(cellSize), float64(cellSize), color.RGBA{255, 0, 0, 255})
-	}
-}
-
-func newFallingObject(xposition int) fallingObject {
-	return fallingObject{
-		xposition: xposition,
-		yposition: 0,
-		out:       false,
-	}
+	return false
 }

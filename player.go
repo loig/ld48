@@ -21,69 +21,32 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type player struct {
-	xposition, yposition float64
-	xspeed               float64
-	width, height        float64
-	falling              bool
+	xposition, yposition int
 }
 
 func (p *player) update() {
-	p.updateSpeed()
-	p.updatePosition()
+	p.updateXPosition()
 }
 
-func (p *player) updateSpeed() {
-
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		if p.falling {
-			if p.xspeed < playerMaxSpeed {
-				p.xspeed += playerSpeedIncrement
-			}
-			return
-		}
-		p.xspeed = playerMaxSpeed
-		return
+func (p *player) updateXPosition() {
+	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		p.xposition++
 	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		if p.falling {
-			if p.xspeed > -playerMaxSpeed {
-				p.xspeed -= playerSpeedIncrement
-			}
-			return
-		}
-		p.xspeed = -playerMaxSpeed
-		return
+	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		p.xposition--
 	}
-
-	if p.falling {
-		if p.xspeed > 0 {
-			p.xspeed -= playerSpeedIncrement
-			if p.xspeed < 0 {
-				p.xspeed = 0
-			}
-			return
-		}
-		if p.xspeed < 0 {
-			p.xspeed += playerSpeedIncrement
-			if p.xspeed > 0 {
-				p.xspeed = 0
-			}
-			return
-		}
+	if p.xposition < 0 {
+		p.xposition = 0
 	}
-
-	p.xspeed = 0
-
-}
-
-func (p *player) updatePosition() {
-	p.xposition += p.xspeed
+	if p.xposition >= gridWidth {
+		p.xposition = gridWidth - 1
+	}
 }
 
 func (p *player) draw(screen *ebiten.Image) {
-	ebitenutil.DrawRect(screen, p.xposition-p.width/2, p.yposition-p.height/2, p.width, p.height, color.White)
+	ebitenutil.DrawRect(screen, float64(p.xposition*cellSize), float64(p.yposition*cellSize), float64(cellSize), float64(cellSize), color.White)
 }

@@ -21,8 +21,6 @@ func (g *game) fallingObjectsCollision() bool {
 		if g.p.collide(
 			g.fOL.objects[objectID].xposition,
 			g.fOL.objects[objectID].yposition,
-			g.fOL.objects[objectID].width,
-			g.fOL.objects[objectID].height,
 		) {
 			return true
 		}
@@ -30,19 +28,6 @@ func (g *game) fallingObjectsCollision() bool {
 	return false
 }
 
-func (p *player) collide(x, y, w, h float64) bool {
-	pxmax := p.xposition + p.width/2
-	pxmin := p.xposition - p.width/2
-	xmax := x + w/2
-	xmin := x - w/2
-	xcollide := pxmin < xmax && pxmax > xmin
-	if !xcollide {
-		return false
-	}
-	pymax := p.yposition + p.height/2
-	pymin := p.yposition - p.height/2
-	ymax := y + h/2
-	ymin := y - h/2
-	ycollide := pymin < ymax && pymax > ymin
-	return ycollide
+func (p *player) collide(x, y int) bool {
+	return p.xposition == x && p.yposition == y
 }
