@@ -17,16 +17,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
-	"image/color"
+	"image"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type fallingObject struct {
 	xposition, yposition int
 	alive                bool
+	objectType           int
 }
+
+const (
+	stone1 int = iota
+	stone2
+)
 
 func (fO *fallingObject) update() {
 	if fO.alive {
@@ -37,20 +43,24 @@ func (fO *fallingObject) update() {
 
 func (fO *fallingObject) draw(screen *ebiten.Image) {
 	if fO.alive {
-		ebitenutil.DrawRect(screen, float64(fO.xposition*cellSize), float64(fO.yposition*cellSize), float64(cellSize), float64(cellSize), color.RGBA{255, 0, 0, 255})
+		options := ebiten.DrawImageOptions{}
+		options.GeoM.Translate(float64((fO.xposition+leftMargin)*cellSize), float64(fO.yposition*cellSize))
+		screen.DrawImage(spriteSheetImage.SubImage(image.Rect(fO.objectType*cellSize, cellSize, fO.objectType*cellSize+cellSize, 2*cellSize)).(*ebiten.Image), &options)
 	}
 }
 
-func newFallingObject(xposition int) fallingObject {
-	return fallingObject{
-		xposition: xposition,
-		yposition: 0,
-		alive:     true,
-	}
+func newFallingObject(xposition int) (fO fallingObject) {
+	fO.reset(xposition)
+	return fO
 }
 
 func (fO *fallingObject) reset(xposition int) {
 	fO.alive = true
 	fO.xposition = xposition
 	fO.yposition = 0
+	if rand.Intn(2) == 0 {
+		fO.objectType = stone1
+	} else {
+		fO.objectType = stone2
+	}
 }

@@ -21,6 +21,7 @@ type game struct {
 	p     player
 	fOL   fallingObjectsList
 	sH    speedHandler
+	f     field
 }
 
 const (
@@ -32,6 +33,8 @@ const (
 func initGame() *game {
 	g := game{}
 
+	loadAssets()
+
 	g.p = player{
 		xposition: 3,
 		yposition: 9,
@@ -40,8 +43,11 @@ func initGame() *game {
 	g.fOL = initFallingObjectsList(100)
 
 	g.sH = speedHandler{
-		framesPerStep: 20,
+		framesPerElevatorStep:      20,
+		framesPerFallingObjectStep: 15,
 	}
+
+	g.f = initField()
 
 	return &g
 }

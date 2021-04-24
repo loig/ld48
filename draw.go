@@ -20,7 +20,9 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 func (g *game) Draw(screen *ebiten.Image) {
 
+	g.f.drawBackground(screen)
 	g.p.draw(screen)
 	g.fOL.draw(screen)
+	g.f.drawForeground(screen)
 
 }

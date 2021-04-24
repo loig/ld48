@@ -17,14 +17,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 type speedHandler struct {
-	framesPerStep int
-	frame         int
+	framesPerElevatorStep      int
+	elevatorFrame              int
+	framesPerFallingObjectStep int
+	fallingObjectFrame         int
 }
 
-func (s *speedHandler) isNextStep() bool {
-	s.frame++
-	if s.frame >= s.framesPerStep {
-		s.frame = 0
+func (s *speedHandler) isNextElevatorStep() bool {
+	s.elevatorFrame++
+	if s.elevatorFrame >= s.framesPerElevatorStep {
+		s.elevatorFrame = 0
+		return true
+	}
+	return false
+}
+
+func (s *speedHandler) isNextFallingObjectStep() bool {
+	s.fallingObjectFrame++
+	if s.fallingObjectFrame >= s.framesPerFallingObjectStep {
+		s.fallingObjectFrame = 0
 		return true
 	}
 	return false

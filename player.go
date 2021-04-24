@@ -48,5 +48,5 @@ func (p *player) updateXPosition() {
 }
 
 func (p *player) draw(screen *ebiten.Image) {
-	ebitenutil.DrawRect(screen, float64(p.xposition*cellSize), float64(p.yposition*cellSize), float64(cellSize), float64(cellSize), color.White)
+	ebitenutil.DrawRect(screen, float64((p.xposition+leftMargin)*cellSize), float64(p.yposition*cellSize), float64(cellSize), float64(cellSize), color.White)
 }

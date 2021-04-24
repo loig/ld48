@@ -16,14 +16,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import "log"
-
 func (g *game) Update() error {
 
 	switch g.state {
 	case stateElevatorDanger:
+		if g.sH.isNextElevatorStep() {
+			g.f.update()
+		}
 		g.p.update()
-		if g.sH.isNextStep() {
+		if g.sH.isNextFallingObjectStep() {
 			g.fOL.update()
 			if g.fOL.doneFalling() {
 				g.state = stateElevatorDone
@@ -33,9 +34,7 @@ func (g *game) Update() error {
 			g.state = stateElevatorDead
 		}
 	case stateElevatorDone:
-		log.Print("Done")
 	case stateElevatorDead:
-		log.Print("Dead")
 	}
 
 	return nil
