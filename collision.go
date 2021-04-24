@@ -16,33 +16,33 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import (
-	"image/color"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-)
-
-type fallingObject struct {
-	xposition, yposition float64
-	yspeed               float64
-	width, height        float64
-}
-
-func (fO *fallingObject) update() {
-	fO.yposition += fO.yspeed
-}
-
-func (fO *fallingObject) draw(screen *ebiten.Image) {
-	ebitenutil.DrawRect(screen, fO.xposition-fO.width/2, fO.yposition-fO.height/2, fO.width, fO.height, color.RGBA{255, 0, 0, 255})
-}
-
-func newFallingObject(xposition, width, height float64) fallingObject {
-	return fallingObject{
-		xposition: xposition,
-		yposition: -width / 2,
-		yspeed:    fallingObjectSpeed,
-		width:     width,
-		height:    height,
+func (g *game) fallingObjectsCollision() bool {
+	for objectID := 0; objectID < g.fOL.nextObjectID; objectID++ {
+		if g.p.collide(
+			g.fOL.objects[objectID].xposition,
+			g.fOL.objects[objectID].yposition,
+			g.fOL.objects[objectID].width,
+			g.fOL.objects[objectID].height,
+		) {
+			return true
+		}
 	}
+	return false
+}
+
+func (p *player) collide(x, y, w, h float64) bool {
+	pxmax := p.xposition + p.width/2
+	pxmin := p.xposition - p.width/2
+	xmax := x + w/2
+	xmin := x - w/2
+	xcollide := pxmin < xmax && pxmax > xmin
+	if !xcollide {
+		return false
+	}
+	pymax := p.yposition + p.height/2
+	pymin := p.yposition - p.height/2
+	ymax := y + h/2
+	ymin := y - h/2
+	ycollide := pymin < ymax && pymax > ymin
+	return ycollide
 }

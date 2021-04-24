@@ -17,16 +17,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 type game struct {
-	p   player
-	fOL fallingObjectsList
+	state int
+	p     player
+	fOL   fallingObjectsList
 }
+
+const (
+	stateElevatorDanger int = iota
+	stateElevatorDead
+)
 
 func initGame() *game {
 	g := game{}
 
 	g.p = player{
-		xposition: float64(windowWidth) / 2,
-		yposition: float64(windowHeight) * 2 / 3,
+		xposition: float64(screenWidth) / 2,
+		yposition: float64(screenHeight) * 2 / 3,
 		xspeed:    0,
 		width:     64,
 		height:    64,

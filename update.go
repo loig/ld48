@@ -18,8 +18,15 @@ package main
 
 func (g *game) Update() error {
 
-	g.p.update()
-	g.fOL.update()
+	switch g.state {
+	case stateElevatorDanger:
+		g.p.update()
+		g.fOL.update()
+		if g.fallingObjectsCollision() {
+			g.state = stateElevatorDead
+		}
+	case stateElevatorDead:
+	}
 
 	return nil
 }

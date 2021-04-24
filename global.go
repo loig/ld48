@@ -17,8 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 const (
-	windowHeight         int     = 600
-	windowWidth          int     = 800
+	screenHeight         int     = 600
+	screenWidth          int     = 800
 	playerMaxSpeed       float64 = 4
 	playerSpeedIncrement float64 = 0.2
 	fallingObjectSpeed   float64 = 6
