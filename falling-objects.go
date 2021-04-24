@@ -16,10 +16,33 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-func (g *game) Update() error {
+import (
+	"image/color"
 
-	g.p.update()
-	g.fOL.update()
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+)
 
-	return nil
+type fallingObject struct {
+	xposition, yposition float64
+	yspeed               float64
+	width, height        float64
+}
+
+func (fO *fallingObject) update() {
+	fO.yposition += fO.yspeed
+}
+
+func (fO *fallingObject) draw(screen *ebiten.Image) {
+	ebitenutil.DrawRect(screen, fO.xposition-fO.width/2, fO.yposition-fO.height/2, fO.width, fO.height, color.RGBA{255, 0, 0, 255})
+}
+
+func newFallingObject(xposition, width, height float64) fallingObject {
+	return fallingObject{
+		xposition: xposition,
+		yposition: -width / 2,
+		yspeed:    fallingObjectSpeed,
+		width:     width,
+		height:    height,
+	}
 }

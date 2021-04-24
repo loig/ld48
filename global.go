@@ -21,4 +21,5 @@ const (
 	windowWidth          int     = 800
 	playerMaxSpeed       float64 = 4
 	playerSpeedIncrement float64 = 0.2
+	fallingObjectSpeed   float64 = 6
 )

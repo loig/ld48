@@ -17,7 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 type game struct {
-	p player
+	p   player
+	fOL fallingObjectsList
 }
 
 func initGame() *game {
@@ -31,6 +32,8 @@ func initGame() *game {
 		height:    64,
 		falling:   false,
 	}
+
+	g.fOL = initFallingObjectsList()
 
 	return &g
 }
