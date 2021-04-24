@@ -25,18 +25,18 @@ import (
 
 type fallingObject struct {
 	xposition, yposition int
-	out                  bool
+	alive                bool
 }
 
 func (fO *fallingObject) update() {
-	if !fO.out {
+	if fO.alive {
 		fO.yposition++
-		fO.out = fO.yposition >= gridHeight
+		fO.alive = fO.yposition < elevatorLevel
 	}
 }
 
 func (fO *fallingObject) draw(screen *ebiten.Image) {
-	if !fO.out {
+	if fO.alive {
 		ebitenutil.DrawRect(screen, float64(fO.xposition*cellSize), float64(fO.yposition*cellSize), float64(cellSize), float64(cellSize), color.RGBA{255, 0, 0, 255})
 	}
 }
@@ -45,6 +45,12 @@ func newFallingObject(xposition int) fallingObject {
 	return fallingObject{
 		xposition: xposition,
 		yposition: 0,
-		out:       false,
+		alive:     true,
 	}
+}
+
+func (fO *fallingObject) reset(xposition int) {
+	fO.alive = true
+	fO.xposition = xposition
+	fO.yposition = 0
 }

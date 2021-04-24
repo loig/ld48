@@ -17,8 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 func (g *game) fallingObjectsCollision() bool {
-	for objectID := 0; objectID < g.fOL.nextObjectID; objectID++ {
-		if g.p.collide(
+	for objectID := 0; objectID < len(g.fOL.objects); objectID++ {
+		if g.fOL.objects[objectID].alive && g.p.collide(
 			g.fOL.objects[objectID].xposition,
 			g.fOL.objects[objectID].yposition,
 		) {

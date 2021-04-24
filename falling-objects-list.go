@@ -16,48 +16,99 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"math/rand"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type fallingObjectsList struct {
-	objects      []fallingObject
-	atUpdate     []int
-	nextObjectID int
-	updateCount  int
+	objects           []fallingObject
+	objectsToAdd      int
+	spawnChances      int
+	maxSpawnInterval  int
+	consecutiveSpawns int
+	sinceLastSpawn    int
+	spawnPositions    [gridWidth]int
+	spawnID           int
 }
 
 func (fOL *fallingObjectsList) update() {
-	if fOL.nextObjectID < len(fOL.atUpdate) {
-		fOL.updateCount++
-		for fOL.nextObjectID < len(fOL.atUpdate) &&
-			fOL.updateCount >= fOL.atUpdate[fOL.nextObjectID] {
-			fOL.nextObjectID++
-			fOL.updateCount = 0
-		}
-	}
-	for objectID := 0; objectID < fOL.nextObjectID; objectID++ {
+	for objectID := 0; objectID < len(fOL.objects); objectID++ {
 		fOL.objects[objectID].update()
+	}
+	if fOL.objectsToAdd > 0 {
+		fOL.addFallingObjects()
 	}
 }
 
 func (fOL *fallingObjectsList) doneFalling() bool {
-	return fOL.nextObjectID == len(fOL.objects) && fOL.objects[fOL.nextObjectID-1].out
+	return fOL.objectsToAdd <= 0 && fOL.noAlive()
 }
 
 func (fOL *fallingObjectsList) draw(screen *ebiten.Image) {
-	for objectID := 0; objectID < fOL.nextObjectID; objectID++ {
+	for objectID := 0; objectID < len(fOL.objects); objectID++ {
 		fOL.objects[objectID].draw(screen)
 	}
 }
 
-func initFallingObjectsList() fallingObjectsList {
+func initFallingObjectsList(numObjects int) fallingObjectsList {
 	fOL := fallingObjectsList{}
-	fOL.objects = []fallingObject{
-		newFallingObject(2),
-		newFallingObject(5),
-		newFallingObject(7),
+	fOL.objects = make([]fallingObject, 0, numObjects)
+	fOL.objectsToAdd = numObjects
+	fOL.spawnChances = initialSpawnChances
+	fOL.maxSpawnInterval = initialSpawnInterval
+	fOL.consecutiveSpawns = 0
+	fOL.sinceLastSpawn = fOL.maxSpawnInterval
+	for spawnID := 0; spawnID < len(fOL.spawnPositions); spawnID++ {
+		fOL.spawnPositions[spawnID] = spawnID
 	}
-	fOL.atUpdate = []int{
-		2, 10, 0,
-	}
+	rand.Shuffle(len(fOL.spawnPositions), func(i, j int) {
+		fOL.spawnPositions[i], fOL.spawnPositions[j] = fOL.spawnPositions[j], fOL.spawnPositions[i]
+	})
+	fOL.spawnID = 0
 	return fOL
+}
+
+func (fOL *fallingObjectsList) nextAvailable() int {
+	objectID := 0
+	for objectID < len(fOL.objects) && fOL.objects[objectID].alive {
+		objectID++
+	}
+	return objectID
+}
+
+func (fOL *fallingObjectsList) noAlive() bool {
+	for objectID := 0; objectID < len(fOL.objects); objectID++ {
+		if fOL.objects[objectID].alive {
+			return false
+		}
+	}
+	return true
+}
+
+func (fOL *fallingObjectsList) addFallingObjects() {
+	if fOL.consecutiveSpawns < gridWidth-1 &&
+		(fOL.sinceLastSpawn >= fOL.maxSpawnInterval || rand.Intn(fOL.spawnChances) == 0) {
+		xposition := fOL.spawnPositions[fOL.spawnID]
+		fOL.spawnID++
+		if fOL.spawnID >= len(fOL.spawnPositions) {
+			fOL.spawnID = 0
+			rand.Shuffle(len(fOL.spawnPositions), func(i, j int) {
+				fOL.spawnPositions[i], fOL.spawnPositions[j] = fOL.spawnPositions[j], fOL.spawnPositions[i]
+			})
+		}
+		objectID := fOL.nextAvailable()
+		if objectID < len(fOL.objects) {
+			fOL.objects[objectID].reset(xposition)
+		} else {
+			fOL.objects = append(fOL.objects, newFallingObject(xposition))
+		}
+		fOL.objectsToAdd--
+		fOL.consecutiveSpawns++
+		fOL.sinceLastSpawn = 0
+	} else {
+		fOL.sinceLastSpawn++
+		fOL.consecutiveSpawns = 0
+	}
 }

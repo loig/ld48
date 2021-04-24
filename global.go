@@ -17,9 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 const (
-	screenHeight int = 768
-	screenWidth  int = 512
-	gridWidth    int = 8
-	gridHeight   int = 12
-	cellSize     int = 64
+	screenHeight         int = 768
+	screenWidth          int = 512
+	gridWidth            int = 8
+	gridHeight           int = 12
+	cellSize             int = 64
+	elevatorLevel        int = 10
+	initialSpawnChances  int = 5
+	initialSpawnInterval int = 5
 )
