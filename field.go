@@ -32,6 +32,7 @@ type field struct {
 	elevator         [gridHeight][gridWidth + leftMargin + rightMargin]int
 	walls            [gridHeight][gridWidth + leftMargin + rightMargin]int
 	fallingLevelNum  int
+	currentOddity    int
 }
 
 const (
@@ -48,6 +49,8 @@ const (
 	otherBackTile2
 	otherBackTile3
 	otherBackTile4
+	backBackTile1
+	backBackTile2
 )
 
 const (
@@ -154,15 +157,20 @@ func (f *field) update() {
 		}
 		f.genLine(gridHeight + 1)
 		f.backgroundYShift = 0
+		f.currentOddity = (f.currentOddity + 1) % 2
 	}
 }
 
 func (f *field) drawBackground(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{50, 60, 57, 255})
 	for line := 0; line < gridHeight+2; line++ {
 		options := ebiten.DrawImageOptions{}
 		options.GeoM.Translate(0, float64(line*cellSize-cellSize)-f.backgroundYShift)
 		for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
+			backTile := backBackTile1
+			if (line+row+f.currentOddity)%2 == 0 {
+				backTile = backBackTile2
+			}
+			screen.DrawImage(spriteSheetImage.SubImage(image.Rect(backTile*cellSize, 0, backTile*cellSize+cellSize, cellSize)).(*ebiten.Image), &options)
 			screen.DrawImage(spriteSheetImage.SubImage(image.Rect(f.background[line][row]*cellSize, 0, f.background[line][row]*cellSize+cellSize, cellSize)).(*ebiten.Image), &options)
 			options.GeoM.Translate(float64(cellSize), 0)
 		}

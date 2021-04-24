@@ -43,7 +43,7 @@ func initGame() *game {
 		yposition: 9,
 	}
 
-	g.fOL = initFallingObjectsList(100)
+	g.fOL = initFallingObjectsList(elevatorNumObjectsPerLevel)
 
 	g.sH = speedHandler{
 		framesPerElevatorStep:      20,
