@@ -28,6 +28,10 @@ func (g *game) fallingObjectsCollision() bool {
 	return false
 }
 
-func (p *player) collide(x, y int) bool {
-	return p.xposition == x && p.yposition == y
+func (p *player) collide(x int, y float64) bool {
+	return p.xposition == x && float64(p.yposition*cellSize-cellSize) < y
+}
+
+func (g *game) fallingPlayerCollision() bool {
+	return g.f.walls[g.p.yposition][g.p.xposition+leftMargin] != noWallTile
 }

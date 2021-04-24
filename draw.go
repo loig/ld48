@@ -20,9 +20,16 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 func (g *game) Draw(screen *ebiten.Image) {
 
-	g.f.drawBackground(screen)
-	g.p.draw(screen)
-	g.fOL.draw(screen)
-	g.f.drawForeground(screen)
+	switch g.state {
+	case stateElevatorDanger:
+		g.f.drawBackground(screen)
+		g.p.draw(screen)
+		g.fOL.draw(screen)
+		g.f.drawElevator(screen)
+	case stateFallDanger, stateFallDead:
+		g.f.drawBackground(screen)
+		g.p.draw(screen)
+		g.f.drawWalls(screen)
+	}
 
 }

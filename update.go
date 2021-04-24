@@ -20,21 +20,30 @@ func (g *game) Update() error {
 
 	switch g.state {
 	case stateElevatorDanger:
-		if g.sH.isNextElevatorStep() {
-			g.f.update()
-		}
-		g.p.update()
-		if g.sH.isNextFallingObjectStep() {
-			g.fOL.update()
-			if g.fOL.doneFalling() {
-				g.state = stateElevatorDone
-			}
+		g.f.update()
+		g.p.update(false)
+		g.fOL.update(g.sH.isNextFallingObjectStep())
+		if g.fOL.doneFalling() {
+			g.state = stateElevatorDone
 		}
 		if g.fallingObjectsCollision() {
 			g.state = stateElevatorDead
 		}
 	case stateElevatorDone:
+		g.state = stateFallDanger
+		g.p.startFall()
+		g.f.setFallingLevel()
 	case stateElevatorDead:
+	case stateFallDanger:
+		g.p.update(g.sH.isNextFallingPlayerStep())
+		if g.fallingPlayerCollision() {
+			g.state = stateFallDead
+		}
+		if g.p.fallingDone() {
+			g.p.startFall()
+			g.f.setFallingLevel()
+		}
+	case stateFallDead:
 	}
 
 	return nil

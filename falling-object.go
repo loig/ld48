@@ -24,43 +24,71 @@ import (
 )
 
 type fallingObject struct {
-	xposition, yposition int
-	alive                bool
-	objectType           int
+	xposition  int
+	yposition  float64
+	yspeed     float64
+	alive      bool
+	objectType int
 }
 
 const (
 	stone1 int = iota
 	stone2
+	stone3
+	stone4
+	stone5
+	stone6
+	stone7
+	stone8
+	stone9
+	stone10
 )
 
 func (fO *fallingObject) update() {
 	if fO.alive {
-		fO.yposition++
-		fO.alive = fO.yposition < elevatorLevel
+		fO.yposition += fO.yspeed
+		fO.alive = fO.yposition < float64(elevatorLevel*cellSize-cellSize)
 	}
 }
 
 func (fO *fallingObject) draw(screen *ebiten.Image) {
 	if fO.alive {
 		options := ebiten.DrawImageOptions{}
-		options.GeoM.Translate(float64((fO.xposition+leftMargin)*cellSize), float64(fO.yposition*cellSize))
+		options.GeoM.Translate(float64((fO.xposition+leftMargin)*cellSize), fO.yposition)
 		screen.DrawImage(spriteSheetImage.SubImage(image.Rect(fO.objectType*cellSize, cellSize, fO.objectType*cellSize+cellSize, 2*cellSize)).(*ebiten.Image), &options)
 	}
 }
 
-func newFallingObject(xposition int) (fO fallingObject) {
-	fO.reset(xposition)
+func newFallingObject(xposition int, yspeed float64) (fO fallingObject) {
+	fO.reset(xposition, yspeed)
 	return fO
 }
 
-func (fO *fallingObject) reset(xposition int) {
+func (fO *fallingObject) reset(xposition int, yspeed float64) {
 	fO.alive = true
 	fO.xposition = xposition
 	fO.yposition = 0
-	if rand.Intn(2) == 0 {
+	fO.yspeed = yspeed
+	switch rand.Intn(10) {
+	case 0:
 		fO.objectType = stone1
-	} else {
+	case 1:
 		fO.objectType = stone2
+	case 2:
+		fO.objectType = stone3
+	case 3:
+		fO.objectType = stone4
+	case 4:
+		fO.objectType = stone5
+	case 5:
+		fO.objectType = stone6
+	case 6:
+		fO.objectType = stone7
+	case 7:
+		fO.objectType = stone8
+	case 8:
+		fO.objectType = stone9
+	case 9:
+		fO.objectType = stone10
 	}
 }

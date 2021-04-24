@@ -28,6 +28,9 @@ const (
 	stateElevatorDanger int = iota
 	stateElevatorDone
 	stateElevatorDead
+	stateFallDanger
+	stateFallDone
+	stateFallDead
 )
 
 func initGame() *game {
@@ -45,6 +48,7 @@ func initGame() *game {
 	g.sH = speedHandler{
 		framesPerElevatorStep:      20,
 		framesPerFallingObjectStep: 15,
+		framesPerFallingPlayerStep: 15,
 	}
 
 	g.f = initField()

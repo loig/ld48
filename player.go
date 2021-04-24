@@ -17,22 +17,37 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package main
 
 import (
-	"image/color"
+	"image"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type player struct {
 	xposition, yposition int
+	isFalling            bool
+	pose                 int
 }
 
-func (p *player) update() {
+const (
+	pose1 int = iota
+	pose2
+	pose3
+	pose4
+	pose5
+	endPose
+)
+
+func (p *player) update(fallStep bool) {
 	p.updateXPosition()
+	if p.isFalling && fallStep {
+		p.updateYPosition()
+	}
 }
 
 func (p *player) updateXPosition() {
+	currentPosition := p.xposition
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		p.xposition++
 	}
@@ -45,8 +60,30 @@ func (p *player) updateXPosition() {
 	if p.xposition >= gridWidth {
 		p.xposition = gridWidth - 1
 	}
+	if currentPosition != p.xposition {
+		currentPose := p.pose
+		p.pose = rand.Intn(endPose)
+		if currentPose == p.pose {
+			p.pose = (p.pose + 1) % endPose
+		}
+	}
+}
+
+func (p *player) updateYPosition() {
+	p.yposition++
+}
+
+func (p *player) startFall() {
+	p.isFalling = true
+	p.yposition = 0
+}
+
+func (p *player) fallingDone() bool {
+	return p.yposition >= gridHeight-1
 }
 
 func (p *player) draw(screen *ebiten.Image) {
-	ebitenutil.DrawRect(screen, float64((p.xposition+leftMargin)*cellSize), float64(p.yposition*cellSize), float64(cellSize), float64(cellSize), color.White)
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64((p.xposition+leftMargin)*cellSize), float64(p.yposition*cellSize))
+	screen.DrawImage(spriteSheetImage.SubImage(image.Rect(p.pose*cellSize, 3*cellSize, p.pose*cellSize+cellSize, 4*cellSize)).(*ebiten.Image), &options)
 }

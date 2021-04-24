@@ -21,6 +21,8 @@ type speedHandler struct {
 	elevatorFrame              int
 	framesPerFallingObjectStep int
 	fallingObjectFrame         int
+	framesPerFallingPlayerStep int
+	fallingPlayerFrame         int
 }
 
 func (s *speedHandler) isNextElevatorStep() bool {
@@ -36,6 +38,15 @@ func (s *speedHandler) isNextFallingObjectStep() bool {
 	s.fallingObjectFrame++
 	if s.fallingObjectFrame >= s.framesPerFallingObjectStep {
 		s.fallingObjectFrame = 0
+		return true
+	}
+	return false
+}
+
+func (s *speedHandler) isNextFallingPlayerStep() bool {
+	s.fallingPlayerFrame++
+	if s.fallingPlayerFrame >= s.framesPerFallingPlayerStep {
+		s.fallingPlayerFrame = 0
 		return true
 	}
 	return false

@@ -33,11 +33,11 @@ type fallingObjectsList struct {
 	spawnID           int
 }
 
-func (fOL *fallingObjectsList) update() {
+func (fOL *fallingObjectsList) update(mayAddObject bool) {
 	for objectID := 0; objectID < len(fOL.objects); objectID++ {
 		fOL.objects[objectID].update()
 	}
-	if fOL.objectsToAdd > 0 {
+	if fOL.objectsToAdd > 0 && mayAddObject {
 		fOL.addFallingObjects()
 	}
 }
@@ -88,8 +88,7 @@ func (fOL *fallingObjectsList) noAlive() bool {
 }
 
 func (fOL *fallingObjectsList) addFallingObjects() {
-	if fOL.consecutiveSpawns < gridWidth-1 &&
-		(fOL.sinceLastSpawn >= fOL.maxSpawnInterval || rand.Intn(fOL.spawnChances) == 0) {
+	if fOL.sinceLastSpawn >= fOL.maxSpawnInterval || rand.Intn(fOL.spawnChances) == 0 {
 		xposition := fOL.spawnPositions[fOL.spawnID]
 		fOL.spawnID++
 		if fOL.spawnID >= len(fOL.spawnPositions) {
@@ -100,15 +99,18 @@ func (fOL *fallingObjectsList) addFallingObjects() {
 		}
 		objectID := fOL.nextAvailable()
 		if objectID < len(fOL.objects) {
-			fOL.objects[objectID].reset(xposition)
+			fOL.objects[objectID].reset(xposition, fOL.getYSpeed())
 		} else {
-			fOL.objects = append(fOL.objects, newFallingObject(xposition))
+			fOL.objects = append(fOL.objects, newFallingObject(xposition, fOL.getYSpeed()))
 		}
 		fOL.objectsToAdd--
 		fOL.consecutiveSpawns++
 		fOL.sinceLastSpawn = 0
 	} else {
 		fOL.sinceLastSpawn++
-		fOL.consecutiveSpawns = 0
 	}
+}
+
+func (fOL *fallingObjectsList) getYSpeed() float64 {
+	return 7
 }

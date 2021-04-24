@@ -26,7 +26,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-//go:embed assets/background.png
+//go:embed assets/sprites.png
 var spriteSheetBytes []byte
 var spriteSheetImage *ebiten.Image
 
