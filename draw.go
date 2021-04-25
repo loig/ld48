@@ -21,28 +21,39 @@ import "github.com/hajimehoshi/ebiten/v2"
 func (g *game) Draw(screen *ebiten.Image) {
 
 	switch g.state {
+	case stateTitle:
+		g.drawTitleScreen(screen)
 	case stateIntro:
 		g.drawIntro(screen)
 	case stateElevatorDanger:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.p.draw(screen)
 		g.fOL.draw(screen)
 		g.f.drawElevator(screen)
+	case stateElevatorDead:
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
+		g.fOL.draw(screen)
+		g.f.drawElevator(screen)
+		g.drawDeath(screen)
 	case stateFallDanger, stateFallTransition:
-		g.f.drawBackground(screen, false)
+		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
 		g.p.draw(screen)
 		g.f.drawWalls(screen)
+	case stateFallDead:
+		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
+		g.drawDeath(screen)
+		g.f.drawWalls(screen)
 	case stateFallDone:
-		g.f.drawBackground(screen, false)
+		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
 		g.drawEnd(screen)
 		g.p.draw(screen)
 		g.f.drawWalls(screen)
 	case stateEndGame:
-		g.f.drawBackground(screen, false)
+		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
 		g.drawEnd(screen)
 		g.p.draw(screen)
 	case stateEndBis:
-		g.f.drawBackground(screen, false)
+		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
 		g.drawEnd(screen)
 	}
 

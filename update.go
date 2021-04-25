@@ -16,15 +16,33 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
+import "math/rand"
+
 func (g *game) Update() error {
 
+	if g.earthShaking {
+		g.earthShakingFrame++
+		if g.earthShakingFrame%5 == 0 {
+			g.earthShakingXShift = float64(rand.Intn(10)) - 5
+			g.earthShakingYShift = float64(rand.Intn(10)) - 5
+		}
+		if g.earthShakingFrame > 60 {
+			g.earthShakingXShift = 0
+			g.earthShakingYShift = 0
+			g.earthShaking = false
+			g.earthShakingFrame = 0
+		}
+	}
+
 	switch g.state {
+	case stateTitle:
+		g.updateTitleScreen()
 	case stateIntro:
 		g.updateIntro()
 	case stateElevatorDanger:
 		g.f.update()
 		g.p.update()
-		g.fOL.update(g.sH.isNextFallingObjectStep())
+		g.fOL.update(g.sH.isNextFallingObjectStep(), &g.earthShaking)
 		if g.fOL.doneFalling() {
 			g.state = stateElevatorDone
 		}
@@ -39,6 +57,9 @@ func (g *game) Update() error {
 		g.p.startFall()
 		g.f.setFallingLevel()
 	case stateElevatorDead:
+		g.f.update()
+		g.fOL.update(false, &g.earthShaking)
+		g.deathUpdate()
 	case stateFallDanger:
 		g.p.update()
 		if g.fallingPlayerCollision() {
@@ -69,6 +90,7 @@ func (g *game) Update() error {
 			g.state = stateFallDanger
 		}
 	case stateFallDead:
+		g.deathUpdate()
 	case stateFallDone:
 		g.p.updateYPosition()
 		g.f.updateYPosition()

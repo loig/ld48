@@ -19,16 +19,20 @@ package main
 import "github.com/hajimehoshi/ebiten/v2"
 
 type game struct {
-	state          int
-	p              player
-	fOL            fallingObjectsList
-	sH             speedHandler
-	f              field
-	score          int
-	animationStep  int
-	animationFrame int
-	blackImage     *ebiten.Image
-	endYPosition   float64
+	state              int
+	p                  player
+	fOL                fallingObjectsList
+	sH                 speedHandler
+	f                  field
+	score              int
+	animationStep      int
+	animationFrame     int
+	blackImage         *ebiten.Image
+	endYPosition       float64
+	earthShaking       bool
+	earthShakingFrame  int
+	earthShakingXShift float64
+	earthShakingYShift float64
 }
 
 const (
@@ -50,12 +54,17 @@ func initGame() *game {
 
 	loadAssets()
 
+	g.resetGame()
+
+	return &g
+}
+
+func (g *game) resetGame() {
 	g.p = player{
 		xposition: 4,
 		yposition: 9 * float64(cellSize),
 		pose:      pose5,
 	}
-
 	g.fOL = initFallingObjectsList(elevatorNumObjectsPerLevel)
 
 	g.sH = speedHandler{
@@ -66,9 +75,12 @@ func initGame() *game {
 
 	g.f = initField()
 
+	g.score = 0
+
+	g.f.fallingLevelNum = 0
+
+	g.earthShaking = false
+	g.earthShakingFrame = 0
+
 	g.endYPosition = float64(screenHeight - cellSize)
-
-	g.state = stateElevatorDone
-
-	return &g
 }

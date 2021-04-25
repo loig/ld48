@@ -38,6 +38,8 @@ func (g *game) updateEnd() {
 			g.animationStep++
 			g.animationFrame = 0
 			if g.animationStep > 3 {
+				g.animationStep = 0
+				g.resetGame()
 				g.state = stateTitle
 			}
 			return

@@ -53,6 +53,15 @@ func (g *game) updateIntro() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || g.animationFrame > totalAnimationFrames {
 		g.animationStep++
 		g.animationFrame = 0
+		if g.animationStep == 10 {
+			g.earthShaking = true
+		}
+		if g.animationStep == 11 {
+			g.earthShaking = false
+			g.earthShakingXShift = 0
+			g.earthShakingYShift = 0
+			g.earthShakingFrame = 0
+		}
 		if g.animationStep > 16 {
 			g.state = stateElevatorDanger
 			g.animationStep = 0
@@ -84,32 +93,32 @@ func (g *game) drawIntro(screen *ebiten.Image) {
 		fadeOut(screen, g.animationFrame, totalAnimationFrames)
 	case 7:
 	case 8:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuys(screen)
 		fadeIn(screen, g.animationFrame, totalAnimationFrames)
 	case 9:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuys(screen)
 	case 10:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuys(screen)
 		drawIntroStep3(screen)
 	case 11:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		drawIntroDeads(screen)
 	case 12:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		drawIntroDeads(screen)
 		drawIntroStep4(screen)
 	case 13:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		drawIntroDeads(screen)
@@ -118,7 +127,7 @@ func (g *game) drawIntro(screen *ebiten.Image) {
 	case 15:
 		drawInfo(screen)
 	case 16:
-		g.f.drawBackground(screen, true)
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		fadeIn(screen, g.animationFrame, totalAnimationFrames)

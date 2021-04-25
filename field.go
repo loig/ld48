@@ -190,10 +190,10 @@ func (f *field) update() {
 	}
 }
 
-func (f *field) drawBackground(screen *ebiten.Image, withSide bool) {
+func (f *field) drawBackground(screen *ebiten.Image, withSide bool, shakeX, shakeY float64) {
 	for line := 0; line < gridHeight+2; line++ {
 		options := ebiten.DrawImageOptions{}
-		options.GeoM.Translate(0, float64(line*cellSize-cellSize)+f.backgroundYShift)
+		options.GeoM.Translate(shakeX, float64(line*cellSize-cellSize)+f.backgroundYShift+shakeY)
 		for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
 			backTile := backBackTile1
 			if (line+row+f.currentOddity)%2 == 0 {
@@ -241,7 +241,6 @@ func (f *field) setFallingLevel() bool {
 	switch f.fallingLevelNum {
 	case 1:
 		f.walls = fallingLevel1
-		f.fallingLevelNum = 4
 	case 2:
 		f.walls = fallingLevel2
 	case 3:

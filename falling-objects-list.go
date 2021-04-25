@@ -37,7 +37,7 @@ type fallingObjectsList struct {
 	numDiamond       int
 }
 
-func (fOL *fallingObjectsList) update(mayAddObject bool) {
+func (fOL *fallingObjectsList) update(mayAddObject bool, earthShake *bool) {
 	for objectID := 0; objectID < len(fOL.objects); objectID++ {
 		fOL.objects[objectID].update()
 	}
@@ -47,6 +47,7 @@ func (fOL *fallingObjectsList) update(mayAddObject bool) {
 		} else {
 			if fOL.noAlive() {
 				fOL.setLevel()
+				*earthShake = true
 			}
 		}
 	}
@@ -80,7 +81,7 @@ func initFallingObjectsList(numObjects int) fallingObjectsList {
 	fOL.spawnID = 0
 	fOL.objectSpeed = initialObjectSpeed
 	fOL.batchSize = 1
-	fOL.numDiamond = 3
+	fOL.numDiamond = 1
 	return fOL
 }
 
@@ -151,23 +152,24 @@ func (fOL *fallingObjectsList) setLevel() {
 			fOL.maxSpawnInterval = 2
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
 			fOL.objectSpeed = 9
-			fOL.numDiamond = 3
+			fOL.numDiamond = 1
 		case 2:
+			fOL.batchSize = 2
 			fOL.spawnChances = 1
 			fOL.maxSpawnInterval = 1
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
 			fOL.objectSpeed = 11
-			fOL.numDiamond = 3
+			fOL.numDiamond = 1
 		case 3:
 			fOL.batchSize = 3
 			fOL.minSpawnInterval = 2
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
-			fOL.numDiamond = 3
+			fOL.numDiamond = 1
 		case 4:
 			fOL.batchSize = 5
 			fOL.minSpawnInterval = 3
 			fOL.objectsToAdd = elevatorNumObjectsPerLevel
-			fOL.numDiamond = 3
+			fOL.numDiamond = 1
 		case 5:
 			fOL.batchSize = 7
 			fOL.minSpawnInterval = 5
