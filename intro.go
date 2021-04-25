@@ -83,32 +83,32 @@ func (g *game) drawIntro(screen *ebiten.Image) {
 		fadeOut(screen, g.animationFrame, totalAnimationFrames)
 	case 7:
 	case 8:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuys(screen)
 		fadeIn(screen, g.animationFrame, totalAnimationFrames)
 	case 9:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuys(screen)
 	case 10:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuys(screen)
 		drawIntroStep3(screen)
 	case 11:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		drawIntroDeads(screen)
 	case 12:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		drawIntroDeads(screen)
 		drawIntroStep4(screen)
 	case 13:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		drawIntroDeads(screen)
@@ -117,7 +117,7 @@ func (g *game) drawIntro(screen *ebiten.Image) {
 	case 15:
 		drawInfo(screen)
 	case 16:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
 		fadeIn(screen, g.animationFrame, totalAnimationFrames)

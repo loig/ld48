@@ -190,7 +190,7 @@ func (f *field) update() {
 	}
 }
 
-func (f *field) drawBackground(screen *ebiten.Image) {
+func (f *field) drawBackground(screen *ebiten.Image, withSide bool) {
 	for line := 0; line < gridHeight+2; line++ {
 		options := ebiten.DrawImageOptions{}
 		options.GeoM.Translate(0, float64(line*cellSize-cellSize)+f.backgroundYShift)
@@ -200,7 +200,9 @@ func (f *field) drawBackground(screen *ebiten.Image) {
 				backTile = backBackTile2
 			}
 			screen.DrawImage(spriteSheetImage.SubImage(image.Rect(backTile*cellSize, 0, backTile*cellSize+cellSize, cellSize)).(*ebiten.Image), &options)
-			screen.DrawImage(spriteSheetImage.SubImage(image.Rect(f.background[line][row]*cellSize, 0, f.background[line][row]*cellSize+cellSize, cellSize)).(*ebiten.Image), &options)
+			if withSide || (row != 1 && row != gridWidth+leftMargin+rightMargin-2) {
+				screen.DrawImage(spriteSheetImage.SubImage(image.Rect(f.background[line][row]*cellSize, 0, f.background[line][row]*cellSize+cellSize, cellSize)).(*ebiten.Image), &options)
+			}
 			options.GeoM.Translate(float64(cellSize), 0)
 		}
 	}
@@ -376,18 +378,6 @@ func (f *field) drawWalls(screen *ebiten.Image) {
 	} else {
 		for line := 0; line < gridHeight*2; line++ {
 			options := ebiten.DrawImageOptions{}
-			options.GeoM.Translate(0, float64(line*cellSize/2)+f.yposition)
-			for row := 0; row < (gridWidth+leftMargin+rightMargin)*2; row++ {
-				if f.oldWallTiles[line][row] != emptySmallTile {
-					xstart := (f.oldWallTiles[line][row] % (emptySmallTile / 2)) * cellSize / 2
-					ystart := 4*cellSize + (f.oldWallTiles[line][row]/(emptySmallTile/2))*cellSize/2
-					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(xstart, ystart, xstart+cellSize/2, ystart+cellSize/2)).(*ebiten.Image), &options)
-				}
-				options.GeoM.Translate(float64(cellSize/2), 0)
-			}
-		}
-		for line := 0; line < gridHeight*2; line++ {
-			options := ebiten.DrawImageOptions{}
 			options.GeoM.Translate(0, float64(line*cellSize/2+gridHeight*cellSize-cellSize)+f.yposition)
 			for row := 0; row < (gridWidth+leftMargin+rightMargin)*2; row++ {
 				if f.wallTiles[line][row] != emptySmallTile {
@@ -398,11 +388,33 @@ func (f *field) drawWalls(screen *ebiten.Image) {
 				options.GeoM.Translate(float64(cellSize/2), 0)
 			}
 		}
+		for line := 0; line < gridHeight*2; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize/2)+f.yposition)
+			for row := 0; row < (gridWidth+leftMargin+rightMargin)*2; row++ {
+				if f.oldWallTiles[line][row] != emptySmallTile {
+					xstart := (f.oldWallTiles[line][row] % (emptySmallTile / 2)) * cellSize / 2
+					ystart := 4*cellSize + (f.oldWallTiles[line][row]/(emptySmallTile/2))*cellSize/2
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(xstart, ystart, xstart+cellSize/2, ystart+cellSize/2)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize/2), 0)
+			}
+		}
 		for line := 0; line < gridHeight; line++ {
 			options := ebiten.DrawImageOptions{}
 			options.GeoM.Translate(0, float64(line*cellSize)+f.yposition)
 			for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
 				if f.oldWalls[line][row] == diamondTile {
+					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(diamond*cellSize, cellSize, diamond*cellSize+cellSize, 2*cellSize)).(*ebiten.Image), &options)
+				}
+				options.GeoM.Translate(float64(cellSize), 0)
+			}
+		}
+		for line := 0; line < gridHeight; line++ {
+			options := ebiten.DrawImageOptions{}
+			options.GeoM.Translate(0, float64(line*cellSize+gridHeight*cellSize-cellSize)+f.yposition)
+			for row := 0; row < gridWidth+leftMargin+rightMargin; row++ {
+				if f.walls[line][row] == diamondTile {
 					screen.DrawImage(spriteSheetImage.SubImage(image.Rect(diamond*cellSize, cellSize, diamond*cellSize+cellSize, 2*cellSize)).(*ebiten.Image), &options)
 				}
 				options.GeoM.Translate(float64(cellSize), 0)

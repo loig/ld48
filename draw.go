@@ -24,12 +24,12 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateIntro:
 		g.drawIntro(screen)
 	case stateElevatorDanger:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, true)
 		g.p.draw(screen)
 		g.fOL.draw(screen)
 		g.f.drawElevator(screen)
 	case stateFallDanger, stateFallTransition:
-		g.f.drawBackground(screen)
+		g.f.drawBackground(screen, false)
 		g.p.draw(screen)
 		g.f.drawWalls(screen)
 	}

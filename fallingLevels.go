@@ -64,7 +64,6 @@ var fallingLevel3 [gridHeight][gridWidth + leftMargin + rightMargin]int = [12][1
 var fallingLevel4 [gridHeight][gridWidth + leftMargin + rightMargin]int = [12][12]int{
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
-	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, wallTile, wallTile, wallTile, wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
@@ -74,10 +73,11 @@ var fallingLevel4 [gridHeight][gridWidth + leftMargin + rightMargin]int = [12][1
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, wallTile, wallTile, wallTile, wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
+	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 }
 
 var fallingLevel5 [gridHeight][gridWidth + leftMargin + rightMargin]int = [12][12]int{
-	[12]int{wallTile, wallTile, wallTile, wallTile, wallTile, wallTile, wallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
+	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
 	[12]int{wallTile, wallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, noWallTile, wallTile, wallTile},
