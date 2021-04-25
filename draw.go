@@ -41,8 +41,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.f.drawWalls(screen)
 	case stateFallDead:
 		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
-		g.drawDeath(screen)
 		g.f.drawWalls(screen)
+		g.drawDeath(screen)
 	case stateFallDone:
 		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
 		g.drawEnd(screen)

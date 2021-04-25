@@ -24,6 +24,7 @@ import (
 
 type fallingObjectsList struct {
 	objects          []fallingObject
+	explosions       []explosion
 	objectsToAdd     int
 	spawnChances     int
 	maxSpawnInterval int
@@ -39,15 +40,19 @@ type fallingObjectsList struct {
 
 func (fOL *fallingObjectsList) update(mayAddObject bool, earthShake *bool) {
 	for objectID := 0; objectID < len(fOL.objects); objectID++ {
+		currentlyAlive := fOL.objects[objectID].alive
 		fOL.objects[objectID].update()
+		if currentlyAlive && !fOL.objects[objectID].alive {
+			fOL.explosions[objectID].reset(fOL.objects[objectID].objectType, float64(fOL.objects[objectID].xposition*cellSize), fOL.objects[objectID].yposition)
+		}
+		fOL.explosions[objectID].update()
 	}
 	if mayAddObject {
 		if fOL.objectsToAdd > 0 {
 			fOL.addFallingObjects()
 		} else {
 			if fOL.noAlive() {
-				fOL.setLevel()
-				*earthShake = true
+				fOL.setLevel(earthShake)
 			}
 		}
 	}
@@ -61,12 +66,14 @@ func (fOL *fallingObjectsList) doneFalling() bool {
 func (fOL *fallingObjectsList) draw(screen *ebiten.Image) {
 	for objectID := 0; objectID < len(fOL.objects); objectID++ {
 		fOL.objects[objectID].draw(screen)
+		fOL.explosions[objectID].draw(screen)
 	}
 }
 
 func initFallingObjectsList(numObjects int) fallingObjectsList {
 	fOL := fallingObjectsList{}
 	fOL.objects = make([]fallingObject, 0, numObjects)
+	fOL.explosions = make([]explosion, 0, numObjects)
 	fOL.objectsToAdd = numObjects
 	fOL.spawnChances = initialSpawnChances
 	fOL.maxSpawnInterval = initialSpawnInterval
@@ -124,6 +131,7 @@ func (fOL *fallingObjectsList) addFallingObjects() {
 				fOL.objects[objectID].reset(xposition, fOL.getYSpeed(), isDiamond)
 			} else {
 				fOL.objects = append(fOL.objects, newFallingObject(xposition, fOL.getYSpeed(), isDiamond))
+				fOL.explosions = append(fOL.explosions, explosion{})
 			}
 		}
 		if needShuffle {
@@ -143,9 +151,12 @@ func (fOL *fallingObjectsList) getYSpeed() float64 {
 	return fOL.objectSpeed
 }
 
-func (fOL *fallingObjectsList) setLevel() {
+func (fOL *fallingObjectsList) setLevel(earthShake *bool) {
 	if fOL.levelNum < elevatorNumLevelsPhase1+elevatorNumLevelsPhase2 {
 		fOL.levelNum++
+		if fOL.levelNum < 6 {
+			*earthShake = true
+		}
 		switch fOL.levelNum {
 		case 1:
 			fOL.spawnChances = 2
@@ -168,13 +179,13 @@ func (fOL *fallingObjectsList) setLevel() {
 		case 4:
 			fOL.batchSize = 5
 			fOL.minSpawnInterval = 3
-			fOL.objectsToAdd = elevatorNumObjectsPerLevel
+			fOL.objectsToAdd = elevatorNumObjectsPerLevel / 2
 			fOL.numDiamond = 1
 		case 5:
 			fOL.batchSize = 7
 			fOL.minSpawnInterval = 5
 			fOL.objectSpeed = 8
-			fOL.objectsToAdd = elevatorNumObjectsPerLevel
+			fOL.objectsToAdd = elevatorNumObjectsPerLevel / 3
 			fOL.numDiamond = 0
 		}
 	}
