@@ -33,4 +33,6 @@ const (
 	screenWidth                int     = (gridWidth + leftMargin + rightMargin) * cellSize
 	screenHeight               int     = gridHeight * cellSize
 	totalAnimationFrames       int     = 90
+	transitionSpeed            float64 = -12
+	playerFallSpeed            float64 = 4
 )

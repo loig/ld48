@@ -78,7 +78,7 @@ func (p *player) updateYPosition() {
 func (p *player) startFall() {
 	p.isFalling = true
 	p.yposition = 0
-	p.yspeed = 3
+	p.yspeed = playerFallSpeed
 }
 
 func (p *player) fallingDone() bool {

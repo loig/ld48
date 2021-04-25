@@ -52,9 +52,9 @@ func (g *game) Update() error {
 				g.state = stateFallDone
 			} else {
 				g.f.isTransition = true
-				g.p.yspeed = -g.p.yspeed
-				g.f.transitionSpeed = g.p.yspeed
-				g.f.backgroundYSpeed = g.p.yspeed
+				g.p.yspeed = transitionSpeed
+				g.f.transitionSpeed = transitionSpeed
+				g.f.backgroundYSpeed = transitionSpeed
 				g.state = stateFallTransition
 			}
 		}
@@ -65,6 +65,7 @@ func (g *game) Update() error {
 		if g.p.transitionDone() {
 			g.p.startFall()
 			g.f.isTransition = false
+			g.f.backgroundYShift = 0
 			g.state = stateFallDanger
 		}
 	case stateFallDead:

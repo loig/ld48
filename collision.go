@@ -50,8 +50,8 @@ func (p *player) collide(x int, y float64) bool {
 }
 
 func (g *game) fallingPlayerCollision() bool {
-	ymin := int(math.Floor(g.p.yposition / float64(cellSize)))
-	ymax := int(math.Ceil(g.p.yposition / float64(cellSize)))
+	ymin := int(math.Floor((g.p.yposition + 16) / float64(cellSize)))
+	ymax := int(math.Ceil((g.p.yposition - 16) / float64(cellSize)))
 	return (ymin > 0 && ymin < gridHeight && g.f.walls[ymin][g.p.xposition+leftMargin] == wallTile) ||
 		(ymax > 0 && ymax < gridHeight && g.f.walls[ymax][g.p.xposition+leftMargin] == wallTile)
 }

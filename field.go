@@ -18,7 +18,6 @@ package main
 
 import (
 	"image"
-	"log"
 	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -227,13 +226,18 @@ func (f *field) setFallingLevel() bool {
 		}
 	}
 
-	log.Print(f.fallingLevelNum)
 	f.fallingLevelNum++
 	switch f.fallingLevelNum {
 	case 1:
 		f.walls = fallingLevel1
 	case 2:
 		f.walls = fallingLevel2
+	case 3:
+		f.walls = fallingLevel3
+	case 4:
+		f.walls = fallingLevel4
+	case 5:
+		f.walls = fallingLevel5
 	default:
 		return true
 	}
