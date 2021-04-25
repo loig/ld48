@@ -47,8 +47,9 @@ func initGame() *game {
 	loadAssets()
 
 	g.p = player{
-		xposition: 3,
+		xposition: 4,
 		yposition: 9 * float64(cellSize),
+		pose:      pose5,
 	}
 
 	g.fOL = initFallingObjectsList(elevatorNumObjectsPerLevel)
