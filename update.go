@@ -45,6 +45,8 @@ func (g *game) Update() error {
 		g.fOL.update(g.sH.isNextFallingObjectStep(), &g.earthShaking)
 		if g.fOL.doneFalling() {
 			g.state = stateElevatorDone
+			g.animationStep = 0
+			g.animationFrame = 0
 		}
 		if g.fallingObjectsCollision() {
 			g.state = stateElevatorDead
@@ -53,9 +55,17 @@ func (g *game) Update() error {
 			g.score++
 		}
 	case stateElevatorDone:
-		g.state = stateFallDanger
-		g.p.startFall()
-		g.f.setFallingLevel()
+		if g.updateElevatorBreak() {
+			g.state = statePrepareFall
+			g.p.startFall()
+			g.f.setFallingLevel()
+			g.animationStep = 0
+			g.animationFrame = 0
+		}
+	case statePrepareFall:
+		if g.updateAfterElevator() {
+			g.state = stateFallDanger
+		}
 	case stateElevatorDead:
 		g.f.update()
 		g.fOL.update(false, &g.earthShaking)

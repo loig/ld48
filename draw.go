@@ -35,6 +35,15 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.fOL.draw(screen)
 		g.f.drawElevator(screen)
 		g.drawDeath(screen)
+	case stateElevatorDone:
+		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
+		g.p.draw(screen)
+		g.drawElevatorBreak(screen)
+	case statePrepareFall:
+		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
+		g.p.draw(screen)
+		g.f.drawWalls(screen)
+		fadeIn(screen, g.animationFrame, totalAnimationFrames)
 	case stateFallDanger, stateFallTransition:
 		g.f.drawBackground(screen, false, g.earthShakingXShift, g.earthShakingYShift)
 		g.p.draw(screen)

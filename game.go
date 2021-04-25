@@ -41,6 +41,7 @@ const (
 	stateElevatorDanger
 	stateElevatorDone
 	stateElevatorDead
+	statePrepareFall
 	stateFallDanger
 	stateFallTransition
 	stateFallDone
