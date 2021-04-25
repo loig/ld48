@@ -32,6 +32,18 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.f.drawBackground(screen, false)
 		g.p.draw(screen)
 		g.f.drawWalls(screen)
+	case stateFallDone:
+		g.f.drawBackground(screen, false)
+		g.drawEnd(screen)
+		g.p.draw(screen)
+		g.f.drawWalls(screen)
+	case stateEndGame:
+		g.f.drawBackground(screen, false)
+		g.drawEnd(screen)
+		g.p.draw(screen)
+	case stateEndBis:
+		g.f.drawBackground(screen, false)
+		g.drawEnd(screen)
 	}
 
 }

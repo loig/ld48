@@ -55,6 +55,7 @@ func (g *game) updateIntro() {
 		g.animationFrame = 0
 		if g.animationStep > 16 {
 			g.state = stateElevatorDanger
+			g.animationStep = 0
 		}
 		return
 	}

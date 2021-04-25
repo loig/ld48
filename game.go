@@ -28,10 +28,12 @@ type game struct {
 	animationStep  int
 	animationFrame int
 	blackImage     *ebiten.Image
+	endYPosition   float64
 }
 
 const (
-	stateIntro int = iota
+	stateTitle int = iota
+	stateIntro
 	stateElevatorDanger
 	stateElevatorDone
 	stateElevatorDead
@@ -39,6 +41,8 @@ const (
 	stateFallTransition
 	stateFallDone
 	stateFallDead
+	stateEndGame
+	stateEndBis
 )
 
 func initGame() *game {
@@ -61,6 +65,8 @@ func initGame() *game {
 	}
 
 	g.f = initField()
+
+	g.endYPosition = float64(screenHeight - cellSize)
 
 	g.state = stateElevatorDone
 

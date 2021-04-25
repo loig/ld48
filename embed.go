@@ -31,6 +31,10 @@ import (
 var spriteSheetBytes []byte
 var spriteSheetImage *ebiten.Image
 
+//go:embed assets/end.png
+var endBytes []byte
+var endImage *ebiten.Image
+
 var blackImage *ebiten.Image
 
 func loadAssets() {
@@ -43,4 +47,10 @@ func loadAssets() {
 
 	blackImage = ebiten.NewImage(screenWidth, screenHeight)
 	blackImage.Fill(color.Black)
+
+	endDecoded, _, err := image.Decode(bytes.NewReader(endBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	endImage = ebiten.NewImageFromImage(endDecoded)
 }

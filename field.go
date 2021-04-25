@@ -225,13 +225,23 @@ func (f *field) setFallingLevel() bool {
 	for line := 0; line < len(f.walls); line++ {
 		for row := 0; row < len(f.walls[0]); row++ {
 			f.oldWalls[line][row] = f.walls[line][row]
+			f.walls[line][row] = noWallTile
+		}
+	}
+
+	for line := 0; line < len(f.wallTiles); line++ {
+		for row := 0; row < len(f.wallTiles[0]); row++ {
+			f.oldWallTiles[line][row] = f.wallTiles[line][row]
+			f.wallTiles[line][row] = emptySmallTile
 		}
 	}
 
 	f.fallingLevelNum++
+
 	switch f.fallingLevelNum {
 	case 1:
 		f.walls = fallingLevel1
+		f.fallingLevelNum = 4
 	case 2:
 		f.walls = fallingLevel2
 	case 3:
@@ -244,11 +254,6 @@ func (f *field) setFallingLevel() bool {
 		return true
 	}
 
-	for line := 0; line < len(f.wallTiles); line++ {
-		for row := 0; row < len(f.wallTiles[0]); row++ {
-			f.oldWallTiles[line][row] = f.wallTiles[line][row]
-		}
-	}
 	for line := 0; line < gridHeight; line++ {
 		f.wallTiles[line*2][0] = emptySmallTile
 		f.wallTiles[line*2][1] = emptySmallTile

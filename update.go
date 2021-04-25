@@ -48,13 +48,13 @@ func (g *game) Update() error {
 			g.score++
 		}
 		if g.p.fallingDone() {
+			g.f.isTransition = true
+			g.p.yspeed = transitionSpeed
+			g.f.transitionSpeed = transitionSpeed
+			g.f.backgroundYSpeed = transitionSpeed
 			if g.f.setFallingLevel() {
 				g.state = stateFallDone
 			} else {
-				g.f.isTransition = true
-				g.p.yspeed = transitionSpeed
-				g.f.transitionSpeed = transitionSpeed
-				g.f.backgroundYSpeed = transitionSpeed
 				g.state = stateFallTransition
 			}
 		}
@@ -69,6 +69,23 @@ func (g *game) Update() error {
 			g.state = stateFallDanger
 		}
 	case stateFallDead:
+	case stateFallDone:
+		g.p.updateYPosition()
+		g.f.updateYPosition()
+		g.f.update()
+		g.endYPosition += transitionSpeed
+		if g.p.transitionDone() {
+			g.p.startFall()
+			g.f.isTransition = false
+			g.f.backgroundYShift = 0
+			g.endYPosition = 0
+			g.state = stateEndGame
+		}
+	case stateEndGame:
+		g.updateEnd()
+		g.p.updateYPosition()
+	case stateEndBis:
+		g.updateEnd()
 	}
 
 	return nil
