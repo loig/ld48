@@ -62,7 +62,10 @@ func (g *game) updateIntro() {
 			g.earthShakingYShift = 0
 			g.earthShakingFrame = 0
 		}
-		if g.animationStep > 16 {
+		if g.animationStep == 14 {
+			g.animationFrame = totalAnimationFrames / 2
+		}
+		if g.animationStep > 15 {
 			g.state = stateElevatorDanger
 			g.animationStep = 0
 		}
@@ -124,14 +127,13 @@ func (g *game) drawIntro(screen *ebiten.Image) {
 		drawIntroDeads(screen)
 		fadeOut(screen, g.animationFrame, totalAnimationFrames)
 	case 14:
-	case 15:
 		drawInfo(screen)
-	case 16:
+	case 15:
 		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
-		drawInfo(screen)
 		fadeIn(screen, g.animationFrame, totalAnimationFrames)
+		drawInfo(screen)
 	}
 
 }
