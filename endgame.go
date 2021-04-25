@@ -33,11 +33,11 @@ func (g *game) updateEnd() {
 	} else {
 		g.animationFrame++
 
-		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || (g.animationStep < 3 && (g.animationFrame > totalAnimationFrames ||
+		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || (g.animationStep < 4 && (g.animationFrame > totalAnimationFrames ||
 			g.animationStep == 1 && g.animationFrame > 10)) {
 			g.animationStep++
 			g.animationFrame = 0
-			if g.animationStep > 3 {
+			if g.animationStep > 4 {
 				g.animationStep = 0
 				g.resetGame()
 				g.state = stateTitle
@@ -57,6 +57,9 @@ func (g *game) drawEnd(screen *ebiten.Image) {
 		g.drawPlouf(screen)
 	case 3:
 		g.drawScore(screen)
+	case 4:
+		g.drawScore(screen)
+		g.drawEnterEnd(screen)
 	}
 
 }
@@ -89,4 +92,10 @@ func (g *game) drawScore(screen *ebiten.Image) {
 	screen.DrawImage(spriteSheetImage.SubImage(image.Rect(7*cellSize, 2*cellSize, 8*cellSize, 3*cellSize)).(*ebiten.Image), &options)
 	options.GeoM.Translate(float64(cellSize), 0)
 	screen.DrawImage(spriteSheetImage.SubImage(image.Rect(6*cellSize, 2*cellSize, 7*cellSize, 3*cellSize)).(*ebiten.Image), &options)
+}
+
+func (g *game) drawEnterEnd(screen *ebiten.Image) {
+	options := ebiten.DrawImageOptions{}
+	options.GeoM.Translate(float64(5*cellSize+cellSize/2), float64(8*cellSize))
+	screen.DrawImage(spriteSheetImage.SubImage(image.Rect(15*cellSize, 4*cellSize, 16*cellSize, 5*cellSize)).(*ebiten.Image), &options)
 }

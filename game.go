@@ -33,6 +33,7 @@ type game struct {
 	earthShakingFrame  int
 	earthShakingXShift float64
 	earthShakingYShift float64
+	audio              soundManager
 }
 
 const (
@@ -54,6 +55,8 @@ func initGame() *game {
 	g := game{}
 
 	loadAssets()
+
+	g.initAudio()
 
 	g.resetGame()
 

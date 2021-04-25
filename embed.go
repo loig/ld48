@@ -25,6 +25,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 )
 
 //go:embed assets/sprites.png
@@ -40,6 +41,10 @@ var titleBytes []byte
 var titleImage *ebiten.Image
 
 var blackImage *ebiten.Image
+
+//go:embed assets/bossassenceur.mp3
+var elevatorMusic []byte
+var infiniteElevatorMusic *audio.InfiniteLoop
 
 func loadAssets() {
 	var err error

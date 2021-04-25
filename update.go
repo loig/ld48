@@ -20,6 +20,8 @@ import "math/rand"
 
 func (g *game) Update() error {
 
+	g.updateMusic()
+
 	if g.earthShaking {
 		g.earthShakingFrame++
 		if g.earthShakingFrame%5 == 0 {
