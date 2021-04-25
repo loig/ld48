@@ -21,6 +21,8 @@ import "github.com/hajimehoshi/ebiten/v2"
 func (g *game) Draw(screen *ebiten.Image) {
 
 	switch g.state {
+	case stateIntro:
+		g.drawIntro(screen)
 	case stateElevatorDanger:
 		g.f.drawBackground(screen)
 		g.p.draw(screen)

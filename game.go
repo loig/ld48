@@ -16,17 +16,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
+import "github.com/hajimehoshi/ebiten/v2"
+
 type game struct {
-	state int
-	p     player
-	fOL   fallingObjectsList
-	sH    speedHandler
-	f     field
-	score int
+	state          int
+	p              player
+	fOL            fallingObjectsList
+	sH             speedHandler
+	f              field
+	score          int
+	animationStep  int
+	animationFrame int
+	blackImage     *ebiten.Image
 }
 
 const (
-	stateElevatorDanger int = iota
+	stateIntro int = iota
+	stateElevatorDanger
 	stateElevatorDone
 	stateElevatorDead
 	stateFallDanger
@@ -54,8 +60,6 @@ func initGame() *game {
 	}
 
 	g.f = initField()
-
-	g.state = stateElevatorDone
 
 	return &g
 }

@@ -19,6 +19,8 @@ package main
 func (g *game) Update() error {
 
 	switch g.state {
+	case stateIntro:
+		g.updateIntro()
 	case stateElevatorDanger:
 		g.f.update()
 		g.p.update()

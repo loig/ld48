@@ -16,31 +16,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package main
 
-import (
-	"bytes"
-	_ "embed"
-	"image"
-	"image/color"
-	_ "image/png"
-	"log"
+import "github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/hajimehoshi/ebiten/v2"
-)
+func fadeOut(screen *ebiten.Image, currentFrame, totalFrame int) {
+	options := ebiten.DrawImageOptions{}
+	options.ColorM.Scale(1, 1, 1, float64(currentFrame)/float64(totalFrame))
+	screen.DrawImage(blackImage, &options)
+}
 
-//go:embed assets/sprites.png
-var spriteSheetBytes []byte
-var spriteSheetImage *ebiten.Image
-
-var blackImage *ebiten.Image
-
-func loadAssets() {
-	var err error
-	spriteSheetDecoded, _, err := image.Decode(bytes.NewReader(spriteSheetBytes))
-	if err != nil {
-		log.Fatal(err)
-	}
-	spriteSheetImage = ebiten.NewImageFromImage(spriteSheetDecoded)
-
-	blackImage = ebiten.NewImage(screenWidth, screenHeight)
-	blackImage.Fill(color.Black)
+func fadeIn(screen *ebiten.Image, currentFrame, totalFrame int) {
+	options := ebiten.DrawImageOptions{}
+	options.ColorM.Scale(1, 1, 1, 1-float64(currentFrame)/float64(totalFrame))
+	screen.DrawImage(blackImage, &options)
 }

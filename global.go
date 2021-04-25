@@ -30,6 +30,7 @@ const (
 	initialSpawnInterval       int     = 3
 	initialBackgroundYSpeed    float64 = -1
 	initialObjectSpeed         float64 = 7
-	screenWidth                        = (gridWidth + leftMargin + rightMargin) * cellSize
-	screenHeight                       = gridHeight * cellSize
+	screenWidth                int     = (gridWidth + leftMargin + rightMargin) * cellSize
+	screenHeight               int     = gridHeight * cellSize
+	totalAnimationFrames       int     = 90
 )
