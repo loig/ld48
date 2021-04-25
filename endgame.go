@@ -33,6 +33,10 @@ func (g *game) updateEnd() {
 	} else {
 		g.animationFrame++
 
+		if g.animationStep == 3 || g.animationStep == 4 {
+			g.updateMusic(0)
+		}
+
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || (g.animationStep < 4 && (g.animationFrame > totalAnimationFrames ||
 			g.animationStep == 1 && g.animationFrame > 10)) {
 			g.animationStep++
@@ -40,6 +44,7 @@ func (g *game) updateEnd() {
 			if g.animationStep > 4 {
 				g.animationStep = 0
 				g.resetGame()
+				g.stopMusic(0)
 				g.state = stateTitle
 			}
 			return
@@ -55,6 +60,7 @@ func (g *game) drawEnd(screen *ebiten.Image) {
 	switch g.animationStep {
 	case 1:
 		g.drawPlouf(screen)
+		g.playSound(waterSound, false)
 	case 3:
 		g.drawScore(screen)
 	case 4:

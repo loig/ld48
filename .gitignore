@@ -18,3 +18,4 @@ assets/*.kra
 assets/*.kra~
 assets/*.mscz
 assets/*.png~
+assets/.mscbackup/*

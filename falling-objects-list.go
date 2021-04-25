@@ -38,12 +38,15 @@ type fallingObjectsList struct {
 	numDiamond       int
 }
 
-func (fOL *fallingObjectsList) update(mayAddObject bool, earthShake *bool) {
+func (fOL *fallingObjectsList) update(mayAddObject bool, earthShake *bool) bool {
+	playRockSound := false
 	for objectID := 0; objectID < len(fOL.objects); objectID++ {
 		currentlyAlive := fOL.objects[objectID].alive
 		fOL.objects[objectID].update()
 		if currentlyAlive && !fOL.objects[objectID].alive {
-			fOL.explosions[objectID].reset(fOL.objects[objectID].objectType, float64(fOL.objects[objectID].xposition*cellSize), fOL.objects[objectID].yposition)
+			fOL.explosions[objectID].reset(fOL.objects[objectID].objectType,
+				float64(fOL.objects[objectID].xposition*cellSize), fOL.objects[objectID].yposition)
+			playRockSound = true
 		}
 		fOL.explosions[objectID].update()
 	}
@@ -56,6 +59,7 @@ func (fOL *fallingObjectsList) update(mayAddObject bool, earthShake *bool) {
 			}
 		}
 	}
+	return playRockSound
 }
 
 func (fOL *fallingObjectsList) doneFalling() bool {

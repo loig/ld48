@@ -40,6 +40,7 @@ func (g *game) updateElevatorBreak() bool {
 			g.f.elevator[elevatorLevel][5] = emptyTile
 			g.f.elevator[elevatorLevel][7] = emptyTile
 			g.f.elevator[elevatorLevel][8] = emptyTile
+			g.playSound(earthquakeSound, false)
 		}
 		if g.animationStep == 2 {
 			g.f.elevator[elevatorLevel][2] = emptyTile
@@ -47,6 +48,7 @@ func (g *game) updateElevatorBreak() bool {
 			g.f.elevator[elevatorLevel][4] = emptyTile
 			g.f.elevator[elevatorLevel][6] = emptyTile
 			g.f.elevator[elevatorLevel][9] = emptyTile
+			g.playSound(earthquakeSound, false)
 		}
 	} else if g.animationFrame > totalAnimationFrames {
 		g.animationStep++

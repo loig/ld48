@@ -18,6 +18,7 @@ package main
 
 import (
 	"bytes"
+	"io/ioutil"
 	"log"
 	"math"
 	"time"
@@ -27,45 +28,55 @@ import (
 )
 
 type soundManager struct {
-	audioContext *audio.Context
-	soundPlayer  *audio.Player
-	musicPlayer  *audio.Player
+	audioContext     *audio.Context
+	soundPlayer      *audio.Player
+	musicPlayers     [3]*audio.Player
+	currentMoveSound int
 }
 
 const (
 	rockSound int = iota
+	diamondCatchSound
+	surpriseSound
+	questionSound
+	agreeSound
+	waterSound
+	deathSound
+	earthquakeSound
+	playerMoveSound
+	playerMoveSound2
+	playerMoveSound3
+	playerMoveSound4
+	playerMoveSound5
+	playerMoveSound6
+	playerMoveSound7
+	numSound
 )
 
 // loop the music
-func (g *game) updateMusic() {
-	if g.audio.musicPlayer != nil {
-		if !g.audio.musicPlayer.IsPlaying() {
-			g.audio.musicPlayer.Rewind()
-			g.audio.musicPlayer.Play()
+func (g *game) updateMusic(pID int) {
+	if g.audio.musicPlayers[pID] != nil {
+		if !g.audio.musicPlayers[pID].IsPlaying() {
+			g.audio.musicPlayers[pID].Rewind()
+			g.audio.musicPlayers[pID].Play()
 		}
 	} else {
 		var error error
-		g.audio.musicPlayer, error = audio.NewPlayer(g.audio.audioContext, infiniteElevatorMusic)
+		g.audio.musicPlayers[pID], error = audio.NewPlayer(g.audio.audioContext, infiniteMusic[pID])
 		if error != nil {
 			log.Panic("Audio problem:", error)
 		}
-		g.audio.musicPlayer.Play()
+		g.audio.musicPlayers[pID].Play()
 	}
 }
 
-/*
 // stop the music
-func (g *game) stopMusic() {
-	if g.audio.musicPlayer != nil && g.audio.musicPlayer.IsPlaying() {
-		error := g.audio.musicPlayer.Close()
-		if error != nil {
-			log.Panic("Sound problem:", error)
-		}
+func (g *game) stopMusic(pID int) {
+	if g.audio.musicPlayers[pID] != nil && g.audio.musicPlayers[pID].IsPlaying() {
+		g.audio.musicPlayers[pID].Pause()
 	}
 }
-*/
 
-/*
 // stop the current non-overlaying sound
 func (g *game) stopSound() {
 	if g.audio.soundPlayer != nil && g.audio.soundPlayer.IsPlaying() {
@@ -75,33 +86,21 @@ func (g *game) stopSound() {
 		}
 	}
 }
-*/
 
-/*
 // play a sound, telling if it should overlay
 // with other sounds or not
 func (g *game) playSound(sound int, overlaying bool) {
-	var soundBytes []byte
-	var error error
-	switch sound {
-	case dashSound:
-		soundBytes = dashSoundBytes
-	case moveSound:
-		soundBytes = moveSoundBytes
-	case endLevelSound:
-		soundBytes = endLevelSoundBytes
-	case talkSound:
-		soundBytes = talkSoundBytes
-	case missMoveSound:
-		soundBytes = missMoveSoundBytes
-	case resetSound:
-		soundBytes = resetSoundBytes
-	}
-	if overlaying {
-		soundPlayer, error := audio.NewPlayerFromBytes(g.audio.audioContext, soundBytes)
-		if error != nil {
-			log.Panic("Sound problem:", error)
+	if sound == playerMoveSound {
+		sound = g.audio.currentMoveSound
+		g.audio.currentMoveSound++
+		if g.audio.currentMoveSound > playerMoveSound7 {
+			g.audio.currentMoveSound = playerMoveSound
 		}
+	}
+	var soundBytes []byte = soundsBytes[sound]
+	var error error
+	if overlaying {
+		soundPlayer := audio.NewPlayerFromBytes(g.audio.audioContext, soundBytes)
 		soundPlayer.Play()
 	} else {
 		if g.audio.soundPlayer != nil && g.audio.soundPlayer.IsPlaying() {
@@ -110,108 +109,176 @@ func (g *game) playSound(sound int, overlaying bool) {
 				log.Panic("Sound problem:", error)
 			}
 		}
-		g.audio.soundPlayer, error = audio.NewPlayerFromBytes(g.audio.audioContext, soundBytes)
-		if error != nil {
-			log.Panic("Sound problem:", error)
-		}
+		g.audio.soundPlayer = audio.NewPlayerFromBytes(g.audio.audioContext, soundBytes)
 		g.audio.soundPlayer.Play()
 	}
 }
-*/
 
 // load all audio assets
 func (g *game) initAudio() {
+
 	var error error
 	g.audio.audioContext = audio.NewContext(44100)
+
+	g.audio.currentMoveSound = playerMoveSound
 
 	// music
 	sound, error := mp3.Decode(g.audio.audioContext, bytes.NewReader(elevatorMusic))
 	if error != nil {
 		log.Panic("Audio problem:", error)
 	}
-	tduration, _ := time.ParseDuration("30s")
+	tduration, _ := time.ParseDuration("20s")
 	duration := tduration.Seconds()
-	bytes := int64(math.Round(duration * 4 * float64(44100)))
-	infiniteElevatorMusic = audio.NewInfiniteLoop(sound, bytes)
+	theBytes := int64(math.Round(duration * 4 * float64(44100)))
+	infiniteMusic[0] = audio.NewInfiniteLoop(sound, theBytes)
 
-	/*
-		// sounds
-		soundFile, error = ebitenutil.OpenFile("sounds/dashmove.mp3")
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		sound, error = mp3.Decode(g.audio.audioContext, soundFile)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		dashSoundBytes, error = ioutil.ReadAll(sound)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(fallingObjectsMusic))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	tduration, _ = time.ParseDuration("9.6s")
+	duration = tduration.Seconds()
+	theBytes = int64(math.Round(duration * 4 * float64(44100)))
+	infiniteMusic[1] = audio.NewInfiniteLoop(sound, theBytes)
 
-		soundFile, error = ebitenutil.OpenFile("sounds/normalmove.mp3")
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		sound, error = mp3.Decode(g.audio.audioContext, soundFile)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		moveSoundBytes, error = ioutil.ReadAll(sound)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(fallingMusic))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	infiniteMusic[2] = audio.NewInfiniteLoop(sound, theBytes)
 
-		soundFile, error = ebitenutil.OpenFile("sounds/endlevel.mp3")
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		sound, error = mp3.Decode(g.audio.audioContext, soundFile)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		endLevelSoundBytes, error = ioutil.ReadAll(sound)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(rockSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[rockSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
 
-		soundFile, error = ebitenutil.OpenFile("sounds/talk.mp3")
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		sound, error = mp3.Decode(g.audio.audioContext, soundFile)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		talkSoundBytes, error = ioutil.ReadAll(sound)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(diamondCatchSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[diamondCatchSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
 
-		soundFile, error = ebitenutil.OpenFile("sounds/missmove.mp3")
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		sound, error = mp3.Decode(g.audio.audioContext, soundFile)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		missMoveSoundBytes, error = ioutil.ReadAll(sound)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(surpriseSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[surpriseSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
 
-		soundFile, error = ebitenutil.OpenFile("sounds/reset.mp3")
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		sound, error = mp3.Decode(g.audio.audioContext, soundFile)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-		resetSoundBytes, error = ioutil.ReadAll(sound)
-		if error != nil {
-			log.Panic("Audio problem:", error)
-		}
-	*/
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(questionSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[questionSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(agreeSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[agreeSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(waterSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[waterSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(deathSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[deathSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(earthquakeSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[earthquakeSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSoundBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSound2Bytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound2], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSound3Bytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound3], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSound4Bytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound4], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSound5Bytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound5], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSound6Bytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound6], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = mp3.Decode(g.audio.audioContext, bytes.NewReader(playerMoveSound7Bytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundsBytes[playerMoveSound7], error = ioutil.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
 }

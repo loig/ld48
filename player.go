@@ -41,16 +41,15 @@ const (
 	endPose
 )
 
-func (p *player) update() bool {
-	dead := p.updateXPosition()
+func (p *player) update() (dead bool, move bool) {
+	dead, move = p.updateXPosition()
 	if p.isFalling {
 		p.updateYPosition()
 	}
-	return dead && p.isFalling
+	return dead && p.isFalling, move
 }
 
-func (p *player) updateXPosition() bool {
-	dead := false
+func (p *player) updateXPosition() (dead bool, move bool) {
 	currentPosition := p.xposition
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		p.xposition++
@@ -66,14 +65,17 @@ func (p *player) updateXPosition() bool {
 		p.xposition = gridWidth - 1
 		dead = true
 	}
-	if currentPosition != p.xposition && !p.isFalling {
-		currentPose := p.pose
-		p.pose = rand.Intn(endPose)
-		if currentPose == p.pose {
-			p.pose = (p.pose + 1) % endPose
+	if currentPosition != p.xposition {
+		move = true
+		if !p.isFalling {
+			currentPose := p.pose
+			p.pose = rand.Intn(endPose)
+			if currentPose == p.pose {
+				p.pose = (p.pose + 1) % endPose
+			}
 		}
 	}
-	return dead
+	return dead, move
 }
 
 func (p *player) updateYPosition() {

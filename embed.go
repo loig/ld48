@@ -44,7 +44,61 @@ var blackImage *ebiten.Image
 
 //go:embed assets/bossassenceur.mp3
 var elevatorMusic []byte
-var infiniteElevatorMusic *audio.InfiniteLoop
+
+//go:embed assets/bossassenceur2.mp3
+var fallingObjectsMusic []byte
+
+//go:embed assets/bossassenceur3.mp3
+var fallingMusic []byte
+
+var infiniteMusic [3]*audio.InfiniteLoop
+
+var soundsBytes [numSound][]byte
+
+//go:embed assets/rockSound.mp3
+var rockSoundBytes []byte
+
+//go:embed assets/diamondCatchSound.mp3
+var diamondCatchSoundBytes []byte
+
+//go:embed assets/surpriseSound.mp3
+var surpriseSoundBytes []byte
+
+//go:embed assets/questionSound.mp3
+var questionSoundBytes []byte
+
+//go:embed assets/agreeSound.mp3
+var agreeSoundBytes []byte
+
+//go:embed assets/waterSound.mp3
+var waterSoundBytes []byte
+
+//go:embed assets/deathSound.mp3
+var deathSoundBytes []byte
+
+//go:embed assets/earthquakeSound.mp3
+var earthquakeSoundBytes []byte
+
+//go:embed assets/playerMoveSound.mp3
+var playerMoveSoundBytes []byte
+
+//go:embed assets/playerMoveSound2.mp3
+var playerMoveSound2Bytes []byte
+
+//go:embed assets/playerMoveSound3.mp3
+var playerMoveSound3Bytes []byte
+
+//go:embed assets/playerMoveSound4.mp3
+var playerMoveSound4Bytes []byte
+
+//go:embed assets/playerMoveSound5.mp3
+var playerMoveSound5Bytes []byte
+
+//go:embed assets/playerMoveSound6.mp3
+var playerMoveSound6Bytes []byte
+
+//go:embed assets/playerMoveSound7.mp3
+var playerMoveSound7Bytes []byte
 
 func loadAssets() {
 	var err error

@@ -20,9 +20,10 @@ import "math/rand"
 
 func (g *game) Update() error {
 
-	g.updateMusic()
-
 	if g.earthShaking {
+		if g.earthShakingFrame == 0 {
+			g.playSound(earthquakeSound, true)
+		}
 		g.earthShakingFrame++
 		if g.earthShakingFrame%5 == 0 {
 			g.earthShakingXShift = float64(rand.Intn(10)) - 5
@@ -38,13 +39,21 @@ func (g *game) Update() error {
 
 	switch g.state {
 	case stateTitle:
+		g.updateMusic(2)
 		g.updateTitleScreen()
 	case stateIntro:
+		g.stopMusic(2)
 		g.updateIntro()
 	case stateElevatorDanger:
+		g.updateMusic(1)
 		g.f.update()
-		g.p.update()
-		g.fOL.update(g.sH.isNextFallingObjectStep(), &g.earthShaking)
+		_, move := g.p.update()
+		if move {
+			g.playSound(playerMoveSound, true)
+		}
+		if g.fOL.update(g.sH.isNextFallingObjectStep(), &g.earthShaking) {
+			g.playSound(rockSound, false)
+		}
 		if g.fOL.doneFalling() {
 			g.state = stateElevatorDone
 			g.animationStep = 0
@@ -52,11 +61,14 @@ func (g *game) Update() error {
 		}
 		if g.fallingObjectsCollision() {
 			g.state = stateElevatorDead
+			g.playSound(deathSound, false)
 		}
 		if g.fallingDiamondCollision() {
 			g.score++
+			g.playSound(diamondCatchSound, true)
 		}
 	case stateElevatorDone:
+		g.stopMusic(1)
 		if g.updateElevatorBreak() {
 			g.state = statePrepareFall
 			g.p.startFall()
@@ -65,20 +77,28 @@ func (g *game) Update() error {
 			g.animationFrame = 0
 		}
 	case statePrepareFall:
+		g.updateMusic(2)
 		if g.updateAfterElevator() {
 			g.state = stateFallDanger
 		}
 	case stateElevatorDead:
+		g.stopMusic(1)
 		g.f.update()
 		g.fOL.update(false, &g.earthShaking)
 		g.deathUpdate()
 	case stateFallDanger:
-		dead := g.p.update()
+		g.updateMusic(2)
+		dead, move := g.p.update()
+		if move {
+			g.playSound(playerMoveSound, true)
+		}
 		if dead || g.fallingPlayerCollision() {
 			g.state = stateFallDead
+			g.playSound(deathSound, false)
 		}
 		if g.fallingPlayerDiamondCollision() {
 			g.score++
+			g.playSound(diamondCatchSound, false)
 		}
 		if g.p.fallingDone() {
 			g.f.isTransition = true
@@ -92,6 +112,7 @@ func (g *game) Update() error {
 			}
 		}
 	case stateFallTransition:
+		g.updateMusic(2)
 		g.p.updateYPosition()
 		g.f.updateYPosition()
 		g.f.update()
@@ -102,6 +123,7 @@ func (g *game) Update() error {
 			g.state = stateFallDanger
 		}
 	case stateFallDead:
+		g.stopMusic(2)
 		g.deathUpdate()
 	case stateFallDone:
 		g.p.updateYPosition()
@@ -113,6 +135,7 @@ func (g *game) Update() error {
 			g.f.isTransition = false
 			g.f.backgroundYShift = 0
 			g.endYPosition = 0
+			g.stopMusic(2)
 			g.state = stateEndGame
 		}
 	case stateEndGame:
