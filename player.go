@@ -62,7 +62,7 @@ func (p *player) updateXPosition() {
 	if p.xposition >= gridWidth {
 		p.xposition = gridWidth - 1
 	}
-	if currentPosition != p.xposition {
+	if currentPosition != p.xposition && !p.isFalling {
 		currentPose := p.pose
 		p.pose = rand.Intn(endPose)
 		if currentPose == p.pose {
@@ -79,6 +79,7 @@ func (p *player) startFall() {
 	p.isFalling = true
 	p.yposition = 0
 	p.yspeed = playerFallSpeed
+	p.pose = 12
 }
 
 func (p *player) fallingDone() bool {
