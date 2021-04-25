@@ -130,6 +130,7 @@ func (g *game) drawIntro(screen *ebiten.Image) {
 		g.f.drawBackground(screen, true, g.earthShakingXShift, g.earthShakingYShift)
 		g.f.drawElevator(screen)
 		drawIntroGuyAlone(screen)
+		drawInfo(screen)
 		fadeIn(screen, g.animationFrame, totalAnimationFrames)
 	}
 

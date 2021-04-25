@@ -61,8 +61,8 @@ func (g *game) Update() error {
 		g.fOL.update(false, &g.earthShaking)
 		g.deathUpdate()
 	case stateFallDanger:
-		g.p.update()
-		if g.fallingPlayerCollision() {
+		dead := g.p.update()
+		if dead || g.fallingPlayerCollision() {
 			g.state = stateFallDead
 		}
 		if g.fallingPlayerDiamondCollision() {

@@ -41,14 +41,16 @@ const (
 	endPose
 )
 
-func (p *player) update() {
-	p.updateXPosition()
+func (p *player) update() bool {
+	dead := p.updateXPosition()
 	if p.isFalling {
 		p.updateYPosition()
 	}
+	return dead && p.isFalling
 }
 
-func (p *player) updateXPosition() {
+func (p *player) updateXPosition() bool {
+	dead := false
 	currentPosition := p.xposition
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		p.xposition++
@@ -58,9 +60,11 @@ func (p *player) updateXPosition() {
 	}
 	if p.xposition < 0 {
 		p.xposition = 0
+		dead = true
 	}
 	if p.xposition >= gridWidth {
 		p.xposition = gridWidth - 1
+		dead = true
 	}
 	if currentPosition != p.xposition && !p.isFalling {
 		currentPose := p.pose
@@ -69,6 +73,7 @@ func (p *player) updateXPosition() {
 			p.pose = (p.pose + 1) % endPose
 		}
 	}
+	return dead
 }
 
 func (p *player) updateYPosition() {
